@@ -9,6 +9,10 @@ import skimage
 import Util
 import random
 from common.Point import Point
+#from common.GenGaussianNoise import GenGaussianNoise #importing from subfolder did not work! Why?
+import GenGaussianNoise as gaussianxy
+
+#as gaussianxy
 #
 #Create blank image
 #
@@ -36,7 +40,34 @@ for x in range(0,img_width):
     pt=Point(x,y)
     lst_points.append(pt)
 
-image_result=Util.superimpose_points_on_image(image_noisy,lst_points,0,0,0)
+#
+#Generate noisy around the Parabola
+#
+stddev=1
+num_noisy_points=1
+#1 worked best
+#0
+#5
+#20
+lst_points_with_noise=list()
+for pt_original in lst_points:
+    print(pt_original)
+    arr_cluster=gaussianxy.GenerateClusterOfRandomPointsAroundXY(pt_original.X,pt_original.Y,stddev,num_noisy_points)
+    cluster_shape=arr_cluster.shape
+    #lst_points_with_noise.append(pt_original) #Not adding original point
+    for idx in range(0,cluster_shape[0]):
+        x_cluster=arr_cluster[idx][0]; 
+        y_cluster=arr_cluster[idx][1];
+        if (x_cluster < 0 ) or (x_cluster >= img_width):
+            continue
+        if (y_cluster < 0 ) or (y_cluster >= img_height):
+            continue
+
+        pt_new=Point(x_cluster,y_cluster)
+        lst_points_with_noise.append(pt_new)
+
+
+image_result=Util.superimpose_points_on_image(image_noisy,lst_points_with_noise,0,0,0)
 #
 #Save the image to disk
 #

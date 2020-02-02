@@ -52,9 +52,11 @@ def superimpose_points_on_image(arr_image_input:np.ndarray, points,red:int,green
         if (y<0 or y >= height ):
             continue
 
-        arr_new[y][x][0]=red
-        arr_new[y][x][1]=green
-        arr_new[y][x][2]=blue
+        rounded_x=int(round(x))
+        rounded_y=int(round(y))
+        arr_new[rounded_y][rounded_x][0]=red
+        arr_new[rounded_y][rounded_x][1]=green
+        arr_new[rounded_y][rounded_x][2]=blue
     return arr_new
     pass
 
