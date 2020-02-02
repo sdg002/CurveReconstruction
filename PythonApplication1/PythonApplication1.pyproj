@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>97398253-05a3-4daf-9ada-f57da4da161c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>GenerateNoisyLine.py</StartupFile>
+    <StartupFile>GenerateNoisyParabola.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +24,9 @@
   <ItemGroup>
     <Compile Include="common\Point.py" />
     <Compile Include="GenerateNoisyLine.py" />
+    <Compile Include="GenerateNoisyParabola.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Util.py" />
   </ItemGroup>
   <ItemGroup>
