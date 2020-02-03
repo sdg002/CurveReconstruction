@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>97398253-05a3-4daf-9ada-f57da4da161c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>GenerateNoisyParabola.py</StartupFile>
+    <StartupFile>GenerateNoisyCircle.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,6 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GenerateNoisyCircle.py" />
     <Compile Include="GenGaussianNoise.py" />
     <Compile Include="common\Point.py" />
     <Compile Include="GenerateNoisyLine.py" />
