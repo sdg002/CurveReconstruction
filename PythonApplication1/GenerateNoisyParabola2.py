@@ -43,6 +43,16 @@ for x in range(0,img_width):
     pt=Point(x,y)
     lst_points.append(pt)
 
+#########
+#Objetive  - 
+#   smoothen out the parabola
+#   begin with lowest x, compute y, x+deltaX, compute y, compute distance, if more than threshold than x+0.5deltax
+#   if less than threshold then x+0.25deltax
+YOU EWRE HERE, YOU WERE THINKING ABOUT INCREMENTING DELTAX
+
+#########
+
+
 #
 #Generate noisy around the Parabola
 #
