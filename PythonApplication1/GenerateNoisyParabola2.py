@@ -11,6 +11,7 @@ import random
 from common.Point import Point
 #from common.GenGaussianNoise import GenGaussianNoise #importing from subfolder did not work! Why?
 import GenGaussianNoise as gaussianxy
+import math
 
 #as gaussianxy
 #
@@ -38,29 +39,48 @@ origin_y=img_height*0.25
 lst_points=list()
 multiplier=random.random()*(0.1) + 0.01 #a random number which controls the shape of the parabola
 print("Random multiplier=%f" % (multiplier))
-for x in range(0,img_width):
-    y=multiplier*pow((x - origin_x),2) + origin_y
-    pt=Point(x,y)
-    lst_points.append(pt)
 
+#for x in range(0,img_width):
+#    y=multiplier*pow((x - origin_x),2) + origin_y
+#    pt=Point(x,y)
+#    lst_points.append(pt)
+def Parabola(x:float)->float:
+    y=multiplier*pow((x - origin_x),2) + origin_y
+    return y
+    pass
 #########
 #Objetive  - 
 #   smoothen out the parabola
 #   begin with lowest x, compute y, x+deltaX, compute y, compute distance, if more than threshold than x+0.5deltax
 #   if less than threshold then x+0.25deltax
-YOU EWRE HERE, YOU WERE THINKING ABOUT INCREMENTING DELTAX
 
-#########
-
-
+min_distance=4 # we expect 2 points to be not any more further than this
+x_current=0
+y_current=Parabola(x_current)
+point_last=Point(x_current,y_current)
+delta_x=1
+lst_points.append(point_last)
+while (x_current <= img_width):
+    y_current = Parabola(x_current)
+    distance=math.sqrt( (point_last.X - x_current)**2 + (point_last.Y - y_current)**2)
+    if (distance > min_distance):
+        #select this point
+        pt=Point(x_current,y_current)
+        lst_points.append(pt)
+        x_current=x_current+1
+        point_last=pt
+    else:
+        #too close , move on to the next point
+        x_current=x_current+1
 #
 #Generate noisy around the Parabola
 #
-stddev=2
+stddev=5
+#2
 #3 was too sparse
 #2 looks more sparse
 #1
-num_noisy_points=1
+num_noisy_points=20
 #1 worked best
 #0
 #5
