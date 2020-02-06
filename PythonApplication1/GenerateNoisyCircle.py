@@ -48,21 +48,20 @@ while (theta <= (2*math.pi)):
     y=(math.sin(theta) * radius) + origin_y
     pt=Point(x,y)
     lst_points.append(pt)
-    print("Angle=%f Point=%s" % ((theta * deg_per_radian),pt))
     theta+=delta_theta_radians
-
+print("Generated %d point without noise" % (len(lst_points)))
 #
 #Generate noisy around the Parabola
 #
-stddev=1
-num_noisy_points=1
-#1 worked best
+stddev=5
+#1 worked with stddev=1
+num_noisy_points=20
+#1 worked best with stddev=1
 #0
 #5
 #20
 lst_points_with_noise=list()
 for pt_original in lst_points:
-    print(pt_original)
     arr_cluster=gaussianxy.GenerateClusterOfRandomPointsAroundXY(pt_original.X,pt_original.Y,stddev,num_noisy_points)
     cluster_shape=arr_cluster.shape
     #lst_points_with_noise.append(pt_original) #Not adding original point
@@ -77,7 +76,7 @@ for pt_original in lst_points:
         pt_new=Point(x_cluster,y_cluster)
         lst_points_with_noise.append(pt_new)
 
-
+print("Generated %d point WITH noise" % (len(lst_points_with_noise)))
 image_result=Util.superimpose_points_on_image(image_noisy,lst_points_with_noise,0,0,0)
 #
 #Save the image to disk
@@ -86,7 +85,7 @@ folder_script=os.path.dirname(__file__)
 folder_results=os.path.join(folder_script,"./out/")
 count_of_files=len(os.listdir(folder_results))
 
-filename=("NoisyCircle.%d.png" % count_of_files)
+filename=("NoisyCircle-sp-%f-stddev-%f-numnoisy-%f.%d.png" % (salt_pepper_ratio,stddev,num_noisy_points,count_of_files))
 file_result=os.path.join(folder_script,"./out/",filename)
 skimage.io.imsave(file_result,image_result)
 print("Image saved to fileL%s" % (file_result))
