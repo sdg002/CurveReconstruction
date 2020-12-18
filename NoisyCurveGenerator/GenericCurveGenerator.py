@@ -3,8 +3,8 @@ import os
 import skimage
 import random
 import math
-from RANSAC.Common import Point
-from RANSAC.Common import Util
+from Common import Point
+from Common import Util
 
 class GenericCurveGenerator(object):
     """Generic class that abtracts the drawing of a noisy curve on a canvas of given width and height"""

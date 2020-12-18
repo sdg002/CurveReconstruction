@@ -4,9 +4,9 @@ import skimage
 import random
 import math
 
-from CurveReconstruction.Common import LineModel
-from CurveReconstruction.Common import Point
-from CurveReconstruction.Common import Util
+from Common import LineModel
+from Common import Point
+from Common import Util
 from GenericCurveGenerator import GenericCurveGenerator
 
 
@@ -49,6 +49,6 @@ def generate_cubic():
     generator.output_file=create_new_absolute_filename("Cubic-"+prefix)
     generator.generate_curve()
 
-#generate_cubic()
-generate_sine()
+generate_cubic()
+#generate_sine()
 pass

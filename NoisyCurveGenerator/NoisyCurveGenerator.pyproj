@@ -5,7 +5,7 @@
     <ProjectGuid>83f10395-9c22-47c7-90e7-c6a2aa2f9689</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>ExecGenericCurveGenerator.py</StartupFile>
-    <SearchPath>..\..\</SearchPath>
+    <SearchPath>..\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>NoisyCurveGenerator</Name>
