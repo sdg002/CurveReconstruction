@@ -15,6 +15,10 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "NoisyCurveGenerator", "Nois
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Common", "Common\Common.pyproj", "{EA8337D1-4146-41E9-8F34-35A4B13EECE4}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Algorithm", "Algorithm\Algorithm.pyproj", "{D9B8F31E-4986-4E42-9045-8C030BEC7E92}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Main", "Main\Main.pyproj", "{0F8BE38C-FF15-4B21-88E4-2AE188014A2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,10 @@ Global
 		{83F10395-9C22-47C7-90E7-C6A2AA2F9689}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA8337D1-4146-41E9-8F34-35A4B13EECE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EA8337D1-4146-41E9-8F34-35A4B13EECE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9B8F31E-4986-4E42-9045-8C030BEC7E92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9B8F31E-4986-4E42-9045-8C030BEC7E92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F8BE38C-FF15-4B21-88E4-2AE188014A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F8BE38C-FF15-4B21-88E4-2AE188014A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

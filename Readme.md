@@ -6,4 +6,10 @@ we have a picture with a smooth curve (circle, parabola) and dotted with salt pe
 ## Examples
 
 
-to be done
+## Progress
+- You added the curve generator and Common
+- You tested with Sine generator
+- You brought in the patch extractor
+
+## Next steps
+- 
