@@ -2,6 +2,7 @@ from Algorithm import ImagePatchExtractor
 import os
 import skimage
 from Common import Util
+from Common import LineModel
 
 
 print("hello world")
@@ -23,6 +24,26 @@ def run(inputfilename:str,patchdimension:int):
             patchinfo:PatchInfo=patch_results.get_patch_xy(x,y)
             img_patchregion=patchinfo.image
             lst_all_points=Util.create_points_from_numpyimage(img_patchregion)
+
+            '''
+            you were here - do a sampling
+
+            Find the count of points in each patch
+            ---------------------------------------
+                Create a 2d array
+                Create an image
+                Examine the image
+
+            take a fraction of the patch dimension (may be take half)
+            use RANSAC approach (not full RANSAC) to find the best lines using SSD/median of inliers approach 
+            no need for enhacing the line with new inliers
+
+            What is hte outcome?
+            --------------------
+
+            '''
+
+
             #line=self.find_line_using_ransac(lst_all_points,img_patchregion)
             #if (line  == None):
             #    continue

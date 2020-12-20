@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0f8be38c-ff15-4b21-88e4-2ae188014a2a</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Main.py</StartupFile>
+    <StartupFile>ScipyLineRansac.py</StartupFile>
     <SearchPath>..\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -12,6 +12,8 @@
     <RootNamespace>Main</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <IsWindowsApplication>False</IsWindowsApplication>
+    <InterpreterId>Global|PythonCore|3.7</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +25,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.py" />
+    <Compile Include="ScipyEllipseRansac.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ScipyLineRansac.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="in\" />
@@ -30,6 +38,9 @@
   <ItemGroup>
     <Content Include="in\Cubic-W=500.H=200.MAXD=15.SP=0.90.3.png.3.png" />
     <Content Include="in\Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.7" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
