@@ -19,6 +19,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Algorithm", "Algorithm\Algo
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Main", "Main\Main.pyproj", "{0F8BE38C-FF15-4B21-88E4-2AE188014A2A}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Playground", "Playground\Playground.pyproj", "{02458641-2268-4EB7-8C04-E86CD5E2E63C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,8 @@ Global
 		{D9B8F31E-4986-4E42-9045-8C030BEC7E92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F8BE38C-FF15-4B21-88E4-2AE188014A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F8BE38C-FF15-4B21-88E4-2AE188014A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02458641-2268-4EB7-8C04-E86CD5E2E63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02458641-2268-4EB7-8C04-E86CD5E2E63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
