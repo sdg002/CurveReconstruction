@@ -28,10 +28,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="in\" />
+    <Folder Include="out\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="in\LineSample1.png" />
     <Content Include="in\LineSample2.png" />
+    <Content Include="in\LineSample3.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
