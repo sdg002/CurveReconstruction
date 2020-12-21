@@ -5,6 +5,8 @@ from .Vector import Vector
 from .Util import *
 from .GenerateGaussianNoiseAtPoint import *
 from .PatchInfo import *
+from .RansacLineInfo import *
+from .RansacPatchInfo import *
 
 __all__ = ["Point", 
            "LineModel",
@@ -12,4 +14,7 @@ __all__ = ["Point",
            "Vector"
            "Util",
            "GenerateGaussianNoiseAtPoint",
-           "PatchInfo","PatchResults"]
+           "PatchInfo",
+           "PatchResults",
+           "RansacLineInfo",
+           "RansacPatchInfo"]

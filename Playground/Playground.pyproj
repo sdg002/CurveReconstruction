@@ -25,6 +25,8 @@
     <Compile Include="RansacLineDemo.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ScipyEllipseRansac.py" />
+    <Compile Include="ScipyLineRansac.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="in\" />

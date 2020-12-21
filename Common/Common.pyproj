@@ -34,6 +34,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Point.py" />
+    <Compile Include="RansacLineInfo.py" />
+    <Compile Include="RansacPatchInfo.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Util.py" />
     <Compile Include="Vector.py">
       <SubType>Code</SubType>

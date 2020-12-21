@@ -16,8 +16,6 @@ class ImagePatchExtractor(object):
         return self._image
 
     def extract_patches(self):
-        img_width=self._image.shape[1]
-        img_height=self._image.shape[0]
         _dict_patchregions=dict()
         #
         #outer while loop along Y, increment by stride
@@ -46,7 +44,6 @@ class ImagePatchExtractor(object):
                 patch_region_index=patch_region_index+1
         r=PatchResults(_dict_patchregions,arr_indices) 
         return r
-        pass
 
     @property
     def stride(self):
@@ -93,7 +90,7 @@ class ImagePatchExtractor(object):
                 right=img_width-1
                 x=img_width-self._size
                 x_boundaries.append(XBoundary(x,right,0))
-                break;
+                break
             else:
                 x_boundaries.append(XBoundary(x,right,0))
                 pass
@@ -107,13 +104,13 @@ class ImagePatchExtractor(object):
 class YBoundary(object):
     """The upper and lower extents of the patch"""
     def __init__(self,y1,y2,overflow):
-        self.y1=y1;
+        self.y1=y1
         self.y2=y2
         self.overflow=overflow #by how many pixels does the last patch overshoot the bottom extents
 
 class XBoundary(object):
     """The left and right extents of the patch"""
     def __init__(self,x1,x2,overflow):
-        self.x1=x1;
+        self.x1=x1
         self.x2=x2
         self.overflow=overflow #by how many pixels does the last patch overshoot on the right side of the border
