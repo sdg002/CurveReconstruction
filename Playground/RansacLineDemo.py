@@ -41,7 +41,7 @@ def run(inputfilename:str):
         new_points.append(pt)
 
 
-    filename_noextension=no_extension=os.path.splitext(inputfilename)[0]
+    filename_noextension=os.path.splitext(inputfilename)[0]
     now=datetime.datetime.now()
     count_of_inliers=len(list(map(lambda x: x==True, inliers)))
     filename_result=("%s-%s-threshold-%d-minsamples-%d-inliers-%d.result.png") % (filename_noextension,now.strftime("%Y-%m-%d-%H-%M-%S"),distance_from_line,min_samples,count_of_inliers)

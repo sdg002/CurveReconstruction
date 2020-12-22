@@ -10,6 +10,7 @@ we have a picture with a smooth curve (circle, parabola) and dotted with salt pe
 - You added the curve generator and Common
 - You tested with Sine generator
 - You brought in the patch extractor
+- Completed Patch extraction and skeletal call to new Ransac algo
 
 ## Next steps
-- 
+- Implement new Ransac algo which returns all possible line candidates

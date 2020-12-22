@@ -5,17 +5,18 @@ from typing import Union, Any, List, Optional, cast
 class RansacLineInfo(object):
     """Represents all information of a single Line that has been determined via Ransac algo"""
     def __init__(self):
-        self._Line:LineModel=None
+        self._line:LineModel=None
+        self._inliers=[]
         pass
 
     @property
-    def Line(self)->LineModel:
-        """The Line property."""
-        return self._Line
+    def line(self)->LineModel:
+        """The equation of the line determined by Ransac."""
+        return self._line
 
-    @Line.setter
-    def Line(self, value:LineModel):
-        self._Line = value   
+    @line.setter
+    def line(self, value:LineModel):
+        self._line = value   
 
     @property
     def inliers(self)->List[Point]:
