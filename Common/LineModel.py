@@ -47,7 +47,7 @@ class LineModel:
     #
     def get_inclination(self):
         if (math.fabs( self.B ) < 0.001):
-            return math.pi/2;
+            return math.pi/2
         else:
             slope=-self.A/self.B
             angle=math.atan(slope)
@@ -58,7 +58,7 @@ class LineModel:
     def yintercept(self):
         intercept=math.inf
         if (math.fabs(self.B) > LineModel.SMALL):
-            intercept=-self.C/self.B;
+            intercept=-self.C/self.B
         return intercept
     #
     #Gets the X intercept of the line, if infinite then math.inf
@@ -75,8 +75,8 @@ class LineModel:
     def display_polar(self):
         origin=Point(0,0)
         distance_origin=self.compute_distance(origin)
-        deg_per_radian=90*2/math.pi;
-        angle=self.get_inclination() * deg_per_radian; 
+        deg_per_radian=90*2/math.pi
+        angle=self.get_inclination() * deg_per_radian
 
         #   slope= -a/b
         #   yint= -c/b
@@ -191,4 +191,3 @@ class LineModel:
             intersection=np.linalg.solve(arr_lhs,arr_rhs)
             lst_projections.append(Point(intersection[0],intersection[1]))
         return lst_projections
-        pass
