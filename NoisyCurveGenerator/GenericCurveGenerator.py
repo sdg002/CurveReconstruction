@@ -5,6 +5,7 @@ import random
 import math
 from Common import Point
 from Common import Util
+from skimage import io
 
 class GenericCurveGenerator(object):
     """Generic class that abtracts the drawing of a noisy curve on a canvas of given width and height"""
@@ -27,6 +28,8 @@ class GenericCurveGenerator(object):
         if (value == "sine"):
             self.__curvetype=value
         elif (value == "cubic"):
+            self.__curvetype=value
+        elif (value == "cosine"):
             self.__curvetype=value
         else:
             raise Exception("This curve type is not implemented")
@@ -122,6 +125,13 @@ class GenericCurveGenerator(object):
         y=math.sin(theta)*amplitude
         return y
 
+    def __CosineFunction(self,x, width,height):
+        amplitude=height*0.5*0.9
+        radians_to_pix=math.pi/2 / (height*0.25)
+        theta=x*radians_to_pix
+        y=math.cos(theta)*amplitude
+        return y
+
     def __CubeFunction(self,x, width,height):
         y=(x-width/2)**3
         return y/100000
@@ -129,6 +139,8 @@ class GenericCurveGenerator(object):
     def __InvokeAnyFunction(self,x,width,height):
         if (self.__curvetype == "sine"):
             return self.__SineFunction(x,width,height)
+        elif (self.__curvetype == "cosine"):
+            return self.__CosineFunction(x,width,height)
         elif (self.__curvetype == "cubic"):
             return self.__CubeFunction(x,width,height)
         else:
@@ -156,6 +168,6 @@ class GenericCurveGenerator(object):
         count_of_files=len(os.listdir(folder_results))
         new_filename=("%s.%d.png" % (filename,count_of_files))
         file_result=os.path.join(folder_script,"./out/",new_filename)
-        skimage.io.imsave(file_result,image_result)
+        io.imsave(file_result,image_result)
         print("Image saved to fileL%s" % (file_result))
     

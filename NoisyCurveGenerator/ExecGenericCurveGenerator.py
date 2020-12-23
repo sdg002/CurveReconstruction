@@ -40,6 +40,16 @@ def generate_sine():
     generator.generate_curve()
     pass
 
+def generate_cosine():
+    generator=GenericCurveGenerator(width=img_width,height=img_height)
+    generator.saltpepper=0.95
+    generator.curvetype="cosine"
+    generator.max_consecutive_distance=20
+    prefix=generator.generate_filename_prefix()
+    generator.output_file=create_new_absolute_filename("Cosine-"+prefix)
+    generator.generate_curve()
+    pass
+
 def generate_cubic():
     generator=GenericCurveGenerator(width=img_width,height=img_height)
     generator.saltpepper=0.90
@@ -49,6 +59,7 @@ def generate_cubic():
     generator.output_file=create_new_absolute_filename("Cubic-"+prefix)
     generator.generate_curve()
 
-generate_cubic()
+#generate_cubic()
 #generate_sine()
+generate_cosine()
 pass
