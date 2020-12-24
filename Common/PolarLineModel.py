@@ -17,7 +17,7 @@ class PolarLineModel(object):
         rho=model.C/math.sqrt(model.A**2 + model.B**2)
         point_closest_origin= PolarLineModel._calculate_point_closest_to_origin(model)
         quadrant=PolarLineModel._get_quadrant(point_closest_origin.X, point_closest_origin.Y)
-        acute_theta=math.atan(abs(model.A)/abs(model.B))
+        acute_theta=math.atan(abs(point_closest_origin.Y)/abs(point_closest_origin.X))
         theta=0.0
         if (quadrant == 0):
             theta=acute_theta
@@ -28,10 +28,6 @@ class PolarLineModel(object):
         elif (quadrant == 3):
             theta=math.pi*2-acute_theta
 
-        # if (abs(model.A) < 0.001):
-        #     theta=math.pi/4.0
-        # else:
-        #     theta=math.atan(-model.B/model.A)
         return PolarLineModel(abs(rho),theta)
 
     def __repr__(self):
@@ -40,8 +36,9 @@ class PolarLineModel(object):
 
     @classmethod
     def _calculate_point_closest_to_origin(cls,model:LineModel):
-        x=-model.C/model.A/2
-        y=-model.C/model.B/2
+        s=model.A**2+model.B**2
+        x=-model.A*model.C/s
+        y=-model.B*model.C/s
         return Point(x,y)
 
     @classmethod

@@ -9,49 +9,6 @@ class Test_TestPolarCoordinates(unittest.TestCase):
     """Unit tests for polar coordinate coversion."""
 
 
-    # def test_LinePassing_Through_Origin_And_Slope_1(self):
-    #     std_line=LineModel(-1,+1,0)
-    #     polar_line=PolarLineModel.generate_polar_equation(std_line)
-    #     self.assertAlmostEqual(polar_line.rho, 0, 2,'The rho of the polar equation should match')
-    #     self.assertAlmostEqual(polar_line.theta, math.pi/4.0, 2,'The theta of the polar equation should match')
-    #     pass
-
-    # def test_LinePassing_Through_Origin_And_Slope_minus1(self):
-    #     std_line=LineModel(+1,+1,0)
-    #     polar_line=PolarLineModel.generate_polar_equation(std_line)
-    #     self.assertAlmostEqual(polar_line.rho, 0, 2,'The rho of the polar equation should match')
-    #     self.assertAlmostEqual(polar_line.theta, -math.pi/4.0, 2,'The theta of the polar equation should match')
-    #     pass
-
-    # def test_Line_With_YIntercept_1_And_Slope_1_ShouldHave_Negative_Rho(self):
-    #     std_line=LineModel(-1,+1,-1)
-    #     polar_line=PolarLineModel.generate_polar_equation(std_line)
-    #     self.assertAlmostEqual(polar_line.rho, -1/math.sqrt(2),2,'The rho of the polar equation should match')
-    #     self.assertAlmostEqual(polar_line.theta, math.pi/4.0, 2,'The theta of the polar equation should match')
-    #     pass
-
-    # def test_Line_With_YIntercept_1_XIntercept_minus2_ShouldHave_Negative_Rho(self):
-    #     std_line=LineModel(-0.5,+1,-1)
-    #     polar_line=PolarLineModel.generate_polar_equation(std_line)
-    #     self.assertAlmostEqual(polar_line.rho, -1/math.sqrt(1.25),2,'The rho of the polar equation should match')
-    #     self.assertAlmostEqual(polar_line.theta, 1.107, 2,'The theta of the polar equation should match')
-    #     pass
-
-    # def test_Line_With_YIntercept_minus1_XIntercept_minus2_ShouldHave_Negative_Rho(self):
-    #     std_line=LineModel(-0.5,+1,+1)
-    #     polar_line=PolarLineModel.generate_polar_equation(std_line)
-    #     self.assertAlmostEqual(polar_line.rho, -1/math.sqrt(1.25),2,'The rho of the polar equation should match')
-    #     self.assertAlmostEqual(polar_line.theta, 1.107, 2,'The theta of the polar equation should match')
-    #     pass
-
-    # def test_Line_With_YIntercept_minus1_And_Slope_1(self):
-    #     std_line=LineModel(-1,+1,1)
-    #     polar_line=PolarLineModel.generate_polar_equation(std_line)
-    #     self.assertAlmostEqual(polar_line.rho, 1/math.sqrt(2),2,'The rho of the polar equation should match')
-    #     self.assertAlmostEqual(polar_line.theta, math.pi/4.0, 2,'The theta of the polar equation should match')
-    #     pass
-
-################################
     def test_Line_With_postiveYIntercept_And_positiveXIntercept_ShouldHave_Theta_BetWeen_0And90(self):
         std_line=LineModel(+1,+1,-1)
         polar_line=PolarLineModel.generate_polar_equation(std_line)
@@ -79,6 +36,27 @@ class Test_TestPolarCoordinates(unittest.TestCase):
         self.assertAlmostEqual(polar_line.rho, 1/math.sqrt(2),2,'The rho of the polar equation should match')
         self.assertAlmostEqual(polar_line.theta, math.pi/4 + math.pi + math.pi/2,2,'The rho of the polar equation should match')
         pass
+
+    def test_Line_With_30degrees_InclinationToXAxis(self):
+        test_models=[]
+        expected_polar_models=[]
+
+        test_models.append(LineModel(-0.577,-1,1))
+        expected_polar_models.append(tuple((0.866,1.0472)))
+
+        test_models.append(LineModel(+0.577,-1,1))
+        expected_polar_models.append(tuple((0.866,2.094)))
+
+        test_models.append(LineModel(-0.577,-1,-1))
+        expected_polar_models.append(tuple((0.866,4.1889)))    
+
+        for test_index in range(0,len(test_models)):
+            test_model=test_models[test_index]
+            actual_polar_line=PolarLineModel.generate_polar_equation(test_model)
+
+            expected_polar=expected_polar_models[test_index]
+            self.assertAlmostEqual(actual_polar_line.theta, expected_polar[1],2,'The theta of the polar equation should match')
+            self.assertAlmostEqual(actual_polar_line.rho, expected_polar[0],2,'The rho of the polar equation should match')
 
 if __name__ == '__main__':
     unittest.main()
