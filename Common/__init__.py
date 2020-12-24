@@ -7,14 +7,16 @@ from .GenerateGaussianNoiseAtPoint import *
 from .PatchInfo import *
 from .RansacLineInfo import *
 from .RansacPatchInfo import *
+from .PolarLineModel import *
 
 __all__ = ["Point", 
            "LineModel",
            "CircleModel",
-           "Vector"
+           "Vector",
            "Util",
            "GenerateGaussianNoiseAtPoint",
            "PatchInfo",
            "PatchResults",
            "RansacLineInfo",
-           "RansacPatchInfo"]
+           "RansacPatchInfo",
+           "PolarLineModel"]

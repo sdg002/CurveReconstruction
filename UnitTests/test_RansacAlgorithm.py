@@ -21,7 +21,7 @@ class Test_testRansac(unittest.TestCase):
         self.assertEqual(type(algo.Height),float, 'The type should be float')
         self.assertEqual(algo.ThresholdDistance, 10, 'The threshold distance should be correctly initialized')
 
-    def test_WhenImage_HasOneProminentLine_Then_1_LineShouldBe_Returned(self):
+    def test_WhenImage_Has_One_ProminentLine_Then_1_LineShouldBe_Returned(self):
         folder_script=os.path.dirname(__file__)
         file_test_image=os.path.join(folder_script,"./data/","SampleWith1ProminentLine.png")
         np_image=io.imread(file_test_image,as_gray=True)
@@ -35,6 +35,19 @@ class Test_testRansac(unittest.TestCase):
         first_line:RansacLineInfo=results[0]
         self.assertGreaterEqual(len(first_line.inliers), 10, 'Inliers should be correctly detected')
         self.assertLessEqual(len(first_line.inliers), 11, 'Inliers should be correctly detected')
+        pass
+
+    def test_WhenImage_Has_Two_Prominent_Lines_Then_2_LineShouldBe_Returned(self):
+        folder_script=os.path.dirname(__file__)
+        file_test_image=os.path.join(folder_script,"./data/","SampleWith2ProminentLine.png")
+        np_image=io.imread(file_test_image,as_gray=True)
+        width=np_image.shape[1]
+        height=np_image.shape[0]
+        points=Util.create_points_from_numpyimage(np_image)
+
+        algo=RansacAlgorithm(width,height,points)
+        results:List[RansacLineInfo]=algo.run()
+        self.assertEqual(len(results), 2, 'Count of detected lines should match')
         pass
 
     def test_When_Image_Has_LessThan2Points_Then_Zero_LinesShould_Be_Returned(self):

@@ -9,9 +9,9 @@ class LineModel:
     """Describes the equation of a straight line in ax+by+c format"""
     SMALL=0.001
     def __init__ (self, a:float,b:float,c:float):
-        self.A=a
-        self.B=b
-        self.C=c
+        self.A=float(a)
+        self.B=float(b)
+        self.C=float(c)
         self.__points:List[Point]=list() #Optional the points that were used to make this line
         pass
 
