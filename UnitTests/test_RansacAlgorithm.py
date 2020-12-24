@@ -31,13 +31,16 @@ class Test_testRansac(unittest.TestCase):
 
         algo=RansacAlgorithm(width,height,points)
         results:List[RansacLineInfo]=algo.run()
-        self.assertEqual(len(results), 1, 'message')
+        self.assertEqual(len(results), 2, 'Even though there is only 1 prominent line, 2 lines should be returned. The second line has far fewer inliers than the first')
         first_line:RansacLineInfo=results[0]
         self.assertGreaterEqual(len(first_line.inliers), 10, 'Inliers should be correctly detected')
         self.assertLessEqual(len(first_line.inliers), 11, 'Inliers should be correctly detected')
+
+        second_line:RansacLineInfo=results[1]
+        self.assertLessEqual(len(second_line.inliers), 6, 'Inliers should be correctly detected')
         pass
 
-    def test_WhenImage_Has_Two_ProminentLine_Then_1_LineShouldBe_Returned(self):
+    def test_WhenImage_Has_Two_ProminentLine_Then_2_LinesShouldBe_Returned(self):
         folder_script=os.path.dirname(__file__)
         file_test_image=os.path.join(folder_script,"./data/","SampleWith2ProminentLine.png")
         np_image=io.imread(file_test_image,as_gray=True)
@@ -47,10 +50,15 @@ class Test_testRansac(unittest.TestCase):
 
         algo=RansacAlgorithm(width,height,points)
         results:List[RansacLineInfo]=algo.run()
-        self.assertEqual(len(results), 1, 'message')
+        self.assertEqual(len(results), 2, 'message')
         first_line:RansacLineInfo=results[0]
         self.assertGreaterEqual(len(first_line.inliers), 10, 'Inliers should be correctly detected')
         self.assertLessEqual(len(first_line.inliers), 13, 'Inliers should be correctly detected')
+
+        second_line:RansacLineInfo=results[1]
+        self.assertGreaterEqual(len(second_line.inliers), 8, 'Inliers should be correctly detected')
+        self.assertLessEqual(len(second_line.inliers), 10, 'Inliers should be correctly detected')
+
         pass
 
     # def test_WhenImage_Has_Two_Prominent_Lines_Then_2_LineShouldBe_Returned(self):

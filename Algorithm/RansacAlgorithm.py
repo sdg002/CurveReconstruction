@@ -1,11 +1,9 @@
 from Common import Point
-from typing import Union, Any, List, Optional, cast
+from typing import Union, Any, List, Optional, cast, Dict
 from Common import RansacLineInfo
 from Common import LineModel
 from Common import Point
 import math
-from .HoughAccumator import HoughAccumator
-from Common import PolarLineModel
 
 class RansacAlgorithm(object):
     """implementation of Ransac algorithm"""
@@ -14,7 +12,7 @@ class RansacAlgorithm(object):
         self.Width=float(width)
         self.Height=float(height)
         self.ThresholdDistance=float(10)
-        
+        self.MaxModels=5
         pass
 
     def run(self)->List[RansacLineInfo]:
@@ -23,14 +21,24 @@ class RansacAlgorithm(object):
 
         pairs:List[PairOfPoints]=self.__create_pairs_of_points()
         temp_models:List[LineModelExtended]=self.__create_models_using2points(pairs)
-        temp_models_with_high_inliers:List[LineModelExtended]=self.__get_good_temp_models(temp_models)
-        expanded_models:List[LineModelExtended] = self.expand_models_using_inliers(temp_models_with_high_inliers)
 
-        #unique_models:List[LineModelExtended] = self.eliminate_duplicates_using_hough_accumulator(expanded_models)
-        unique_models:List[LineModelExtended] = self.get_model_with_highest_inliers_and_lowest_ssd(expanded_models)
-        unique_model:LineModelExtended
+        candidate_models=[]
+        for attempt_index in range(0,self.MaxModels):
+            temp_models_with_high_inliers:List[LineModelExtended]=self.__get_good_temp_models(temp_models,candidate_models)
+            if (len(temp_models_with_high_inliers) ==0):
+                break
+
+            expanded_models:List[LineModelExtended] = self.expand_models_using_inliers(temp_models_with_high_inliers)
+            if (len(expanded_models) ==0):
+                break
+
+            best_model = self.get_model_with_highest_inliers_and_lowest_ssd(expanded_models)
+            if (best_model == None):
+                break
+            candidate_models.append(best_model)
+
         results=[]
-        for unique_model in unique_models:
+        for unique_model in candidate_models:
             new_ransac_line = RansacLineInfo()
             new_ransac_line.inliers=unique_model.Inliers #combine Inliers and Seed
             new_ransac_line.line=unique_model.LineModel
@@ -84,10 +92,12 @@ class RansacAlgorithm(object):
         return results,sum_squared_distances
 
     def get_model_with_highest_inliers_and_lowest_ssd(self,expanded_models):
+        if (len(expanded_models) == 0):
+            return None
         max_inliers=max(map(lambda  x: len(x.Inliers), expanded_models))
         models_with_maxinliers=list(filter(lambda x: len(x.Inliers) == max_inliers,expanded_models))
         model_with_min_ssd=min(models_with_maxinliers, key= lambda  x: x.SumOfSquaredDistance)
-        return [model_with_min_ssd]
+        return model_with_min_ssd
 
     def eliminate_duplicates_using_hough_accumulator(self,expanded_models):
         """
@@ -130,7 +140,6 @@ class RansacAlgorithm(object):
                 results.append(pair)
         return results
 
-    #def __create_models_using2points(self, pairsofpoints:List[Point])->List[LineModelExtended]:
     def __create_models_using2points(self, pairsofpoints:List[Point]):
         """
         Creates Lines from the specified pairs of points
@@ -143,14 +152,26 @@ class RansacAlgorithm(object):
             results.append(line_ex)
         return results
 
-    #def __get_good_temp_models(self, line_models:List[LineModelExtended])->List[LineModelExtended]:
-    def __get_good_temp_models(self, line_models):
+    def __get_good_temp_models(self, line_models,already_discovered_models):
         """
         Calculatates inliners for the specified models and returns those which exceed threshold
         """
+        already_used_inlier_points:Dict[int,Point]=dict() # to be done , collect all inliers from all discovered models
+        #create a dictionary of these Points
+        for model in already_discovered_models:
+            inlier:Point
+            for inlier in model.Inliers:
+                already_used_inlier_points[inlier.ID]=inlier
+
         results:List[LineModelExtended]=[]
+        line_model_ex:LineModelExtended
         for line_model_ex in line_models:
-            inliers:List[Point]=[]
+            seed_points=line_model_ex.SeedPoints
+            #Check if the seed points are used as inliers in already discovered models
+            already_used_seed_points=list(filter(lambda  point: (point.ID in already_used_inlier_points.keys()), seed_points))
+            if (len(already_used_seed_points) == len(seed_points)):
+                continue
+            inliers:List[Point]=[]            
             for point in self.Points:
                 if (point in line_model_ex.SeedPoints):
                     continue
