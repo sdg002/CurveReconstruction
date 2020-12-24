@@ -37,18 +37,18 @@ class Test_testRansac(unittest.TestCase):
         self.assertLessEqual(len(first_line.inliers), 11, 'Inliers should be correctly detected')
         pass
 
-    def test_WhenImage_Has_Two_Prominent_Lines_Then_2_LineShouldBe_Returned(self):
-        folder_script=os.path.dirname(__file__)
-        file_test_image=os.path.join(folder_script,"./data/","SampleWith2ProminentLine.png")
-        np_image=io.imread(file_test_image,as_gray=True)
-        width=np_image.shape[1]
-        height=np_image.shape[0]
-        points=Util.create_points_from_numpyimage(np_image)
+    # def test_WhenImage_Has_Two_Prominent_Lines_Then_2_LineShouldBe_Returned(self):
+    #     folder_script=os.path.dirname(__file__)
+    #     file_test_image=os.path.join(folder_script,"./data/","SampleWith2ProminentLine.png")
+    #     np_image=io.imread(file_test_image,as_gray=True)
+    #     width=np_image.shape[1]
+    #     height=np_image.shape[0]
+    #     points=Util.create_points_from_numpyimage(np_image)
 
-        algo=RansacAlgorithm(width,height,points)
-        results:List[RansacLineInfo]=algo.run()
-        self.assertEqual(len(results), 2, 'Count of detected lines should match')
-        pass
+    #     algo=RansacAlgorithm(width,height,points)
+    #     results:List[RansacLineInfo]=algo.run()
+    #     self.assertEqual(len(results), 2, 'Count of detected lines should match')
+    #     pass
 
     def test_When_Image_Has_LessThan2Points_Then_Zero_LinesShould_Be_Returned(self):
         algo=RansacAlgorithm(20,20,[])

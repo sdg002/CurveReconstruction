@@ -4,6 +4,8 @@ from Common import RansacLineInfo
 from Common import LineModel
 from Common import Point
 import math
+from .HoughAccumator import HoughAccumator
+from Common import PolarLineModel
 
 class RansacAlgorithm(object):
     """implementation of Ransac algorithm"""
@@ -24,13 +26,18 @@ class RansacAlgorithm(object):
         temp_models_with_high_inliers:List[LineModelExtended]=self.__get_good_temp_models(temp_models)
         expanded_models:List[LineModelExtended] = self.expand_models_using_inliers(temp_models_with_high_inliers)
 
-        unique_models:List[LineModelExtended] = self.eliminate_duplicates_using_hough_accumulator(expanded_models)
+        #unique_models:List[LineModelExtended] = self.eliminate_duplicates_using_hough_accumulator(expanded_models)
+        unique_models:List[LineModelExtended] = self.get_model_with_highest_inliers_and_lowest_ssd(expanded_models)
+        unique_model:LineModelExtended
+        results=[]
         for unique_model in unique_models:
             new_ransac_line = RansacLineInfo()
             new_ransac_line.inliers=unique_model.Inliers #combine Inliers and Seed
+            new_ransac_line.line=unique_model.LineModel
+            results.append(new_ransac_line)
+        return results
 
-        ##
-
+        '''
         linePerp:RansacLineInfo=RansacLineInfo()
         linePerp.line = LineModel(1,0,-self.Width/2)
         linePerp.inliers=[Point(self.Width/2,0),Point(self.Width/2, self.Height)]
@@ -39,6 +46,7 @@ class RansacAlgorithm(object):
         lineHor.line = LineModel(0,1,-self.Height/3)
         lineHor.inliers = [Point(0,self.Height/3), Point(self.Width,self.Height/3)]
         return [linePerp,lineHor]
+        '''
 
     def expand_models_using_inliers(self,line_models):
         """
@@ -51,8 +59,9 @@ class RansacAlgorithm(object):
             all_inliers.extend(line_model_ex.SeedPoints)
             all_inliers.extend(line_model_ex.Inliers)
             expanded_model=self.create_least_square_model(all_inliers)
-            new_inliers=self.__get_inliers(expanded_model,self.Points,self.ThresholdDistance)
+            new_inliers,sum_squared_distance=self.__get_inliers(expanded_model,self.Points,self.ThresholdDistance)
             new_line=LineModelExtended(expanded_model,[],new_inliers)
+            new_line.SumOfSquaredDistance=sum_squared_distance
             #line_ex=LineModelExtended(expanded_model,[line_model_ex.seed_points[0],line_model_ex.seed_points[1],new_inliers)
             results.append(new_line)
             pass
@@ -63,14 +72,49 @@ class RansacAlgorithm(object):
         Returns all points which are within the specified threshold distance of the specified line
         """
         results=[]
+        distances=[]
         for point in points:
             distance=line.compute_distance(point)
             if (distance> threshold):
                 continue
+            distances.append(distance)
             results.append(point)
-        return results
+        squared_distances=list(map(lambda d: d*d, distances))
+        sum_squared_distances=sum(squared_distances)
+        return results,sum_squared_distances
+
+    def get_model_with_highest_inliers_and_lowest_ssd(self,expanded_models):
+        max_inliers=max(map(lambda  x: len(x.Inliers), expanded_models))
+        models_with_maxinliers=list(filter(lambda x: len(x.Inliers) == max_inliers,expanded_models))
+        model_with_min_ssd=min(models_with_maxinliers, key= lambda  x: x.SumOfSquaredDistance)
+        return [model_with_min_ssd]
 
     def eliminate_duplicates_using_hough_accumulator(self,expanded_models):
+        """
+        Work in progress - the idea was inspired by the voting approach of Hough transform 
+        to distinguish multiple RANSAC lines in a single picture
+        Create a polar equation from the standard line equation
+        Find accumulator index using polar equation
+        Find all cells in the accumulator which have 1 or more entries
+        For each of these cells pick the line with best score (which score? highest inlier count, lowest SSD)
+        """
+        diag=math.sqrt(self.Width**2 + self.Height**2)
+        hough_accumulator=HoughAccumator(diag)
+        expanded_model:LineModelExtended
+        for expanded_model in expanded_models:
+            line_model=expanded_model.LineModel
+            polar_line=PolarLineModel.generate_polar_equation(line_model)
+            hough_accumulator.add_polar_line(polar_line)
+            pass
+
+        best_line_from_each_cell=[]
+        for accumulator_cell in hough_accumulator.cells:
+            if (len(accumulator_cell.votes) == 0):
+                continue
+            all_lines_in_cell=accumulator_cell.Lines
+            line_with_highest_inlier=max(all_lines_in_cell, key=lambda x: len(x.Inliers))
+            best_line_from_each_cell.append(line_with_highest_inlier)
+        return best_line_from_each_cell
         pass
 
     def __create_pairs_of_points(self):
@@ -183,6 +227,7 @@ class LineModelExtended(object):
         self.LineModel:LineModel=line
         self.Inliers:List[Point]=inliers
         self.SeedPoints:List[Point]=seed_points
+        self.SumOfSquaredDistance=float(0)
 
     def __repr__(self):
         display=("Seed points=%d Inlier points=%d, LineModel=%s")%(len(self.SeedPoints),len(self.Inliers),self.LineModel.__repr__())
