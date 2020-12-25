@@ -68,7 +68,7 @@ class RansacAlgorithm(object):
             all_inliers.extend(line_model_ex.Inliers)
             expanded_model=self.create_least_square_model(all_inliers)
             new_inliers,sum_squared_distance=self.__get_inliers(expanded_model,self.Points,self.ThresholdDistance)
-            new_line=LineModelExtended(expanded_model,[],new_inliers)
+            new_line=LineModelExtended(expanded_model,line_model_ex.SeedPoints,new_inliers)
             new_line.SumOfSquaredDistance=sum_squared_distance
             #line_ex=LineModelExtended(expanded_model,[line_model_ex.seed_points[0],line_model_ex.seed_points[1],new_inliers)
             results.append(new_line)
@@ -162,6 +162,10 @@ class RansacAlgorithm(object):
             inlier:Point
             for inlier in model.Inliers:
                 already_used_inlier_points[inlier.ID]=inlier
+            seed:Point
+            for seed in model.SeedPoints:
+                already_used_inlier_points[seed.ID]=inlier
+
 
         results:List[LineModelExtended]=[]
         line_model_ex:LineModelExtended
@@ -242,6 +246,9 @@ class PairOfPoints(object):
         self.Point1:Point=point1
         self.Point2:Point=point2
 
+    def __repr__(self):
+        return ("Point1=%s  Point2=%s")%(self.Point1,self.Point2)
+
 class LineModelExtended(object):
     """Represents a line model along with all inliers."""
     def __init__(self, line:LineModel,seed_points:[],inliers:[]):
@@ -251,5 +258,7 @@ class LineModelExtended(object):
         self.SumOfSquaredDistance=float(0)
 
     def __repr__(self):
-        display=("Seed points=%d Inlier points=%d, LineModel=%s")%(len(self.SeedPoints),len(self.Inliers),self.LineModel.__repr__())
+        seed_points_ids=list(map(lambda p: str(p.ID), self.SeedPoints))
+        display_seed_points_id=','.join(seed_points_ids)
+        display=("Seed points=%s Inlier points=%d, LineModel=%s")%(display_seed_points_id,len(self.Inliers),self.LineModel.__repr__())
         return display

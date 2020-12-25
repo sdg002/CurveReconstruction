@@ -61,6 +61,22 @@ class Test_testRansac(unittest.TestCase):
 
         pass
 
+
+    def test_WhenImage_Has_3_Points_Then_1Line_ShouldBeReturned(self):
+        folder_script=os.path.dirname(__file__)
+        file_test_image=os.path.join(folder_script,"./data/","SampleWith3Points.png")
+        np_image=io.imread(file_test_image,as_gray=True)
+        width=np_image.shape[1]
+        height=np_image.shape[0]
+        points=Util.create_points_from_numpyimage(np_image)
+
+        algo=RansacAlgorithm(width,height,points)
+        results:List[RansacLineInfo]=algo.run()
+        self.assertEqual(len(results), 1, 'message')
+        first_line:RansacLineInfo=results[0]
+        self.assertGreaterEqual(len(first_line.inliers), 1, 'Inliers should be correctly detected')
+        self.assertLessEqual(len(first_line.inliers), 2, 'Inliers should be correctly detected')
+
     # def test_WhenImage_Has_Two_Prominent_Lines_Then_2_LineShouldBe_Returned(self):
     #     folder_script=os.path.dirname(__file__)
     #     file_test_image=os.path.join(folder_script,"./data/","SampleWith2ProminentLine.png")

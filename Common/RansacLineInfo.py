@@ -26,5 +26,8 @@ class RansacLineInfo(object):
     @inliers.setter
     def inliers(self, value:List[Point]):
         self._inliers = value
-    #you were here, implement __repr__
+    
+    def __repr__(self):
+        display=("Count of inliers=%d , Line=%s")%(len(self.inliers),self.line)
+        return display
 
