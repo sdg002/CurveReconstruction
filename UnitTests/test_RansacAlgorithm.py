@@ -74,8 +74,13 @@ class Test_testRansac(unittest.TestCase):
         results:List[RansacLineInfo]=algo.run()
         self.assertEqual(len(results), 1, 'message')
         first_line:RansacLineInfo=results[0]
-        self.assertGreaterEqual(len(first_line.inliers), 1, 'Inliers should be correctly detected')
-        self.assertLessEqual(len(first_line.inliers), 2, 'Inliers should be correctly detected')
+        self.assertEquals(len(first_line.inliers), 3, 'Inliers should be correctly detected')
+
+        for inlier in first_line.inliers:
+            matches=list(filter(lambda  p: p.X == inlier.X and  p.Y == inlier.Y, points))
+            self.assertEqual(len(matches), 1, 'Every inlier point must match one of the points in the original image')
+
+    
 
     # def test_WhenImage_Has_Two_Prominent_Lines_Then_2_LineShouldBe_Returned(self):
     #     folder_script=os.path.dirname(__file__)

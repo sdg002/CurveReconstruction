@@ -1,12 +1,14 @@
 from .LineModel import LineModel
 from .Point import Point
 from typing import Union, Any, List, Optional, cast
+from Common import Util
 
 class RansacLineInfo(object):
     """Represents all information of a single Line that has been determined via Ransac algo"""
     def __init__(self):
         self._line:LineModel=None
         self._inliers=[]
+        self._projected_inliers=None #Projecton of inlier points on the Ransac line
         pass
 
     @property
@@ -31,3 +33,10 @@ class RansacLineInfo(object):
         display=("Count of inliers=%d , Line=%s")%(len(self.inliers),self.line)
         return display
 
+    @property
+    def projected_inliers(self)->List[Point]:
+        """Returns the projection of inlier points on the ransac line."""
+        if (self._projected_inliers==None):
+            #do the computation here
+            self._projected_inliers=Util.generate_plottable_points_from_projection_of_points(self.line,self.inliers)
+        return self._projected_inliers

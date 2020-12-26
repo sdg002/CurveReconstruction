@@ -34,6 +34,7 @@ def run(inputfilename:str,patchdimension:int):
             patchinfo:PatchInfo=patch_results.get_patch_xy(x,y)
             ransac_patch:RansacPatchInfo=process_patch2(patchinfo)            
             ransac_patches.append(ransac_patch)
+            print("\tpatch, x=%d, y=%d info=%s" % (x,y,ransac_patch))
     overlay_results(inputfilename,ransac_patches)
     pass
 
@@ -76,7 +77,12 @@ def overlay_results(inputfilename:str,ransac_patches:List[RansacPatchInfo]):
 
     np_superimposed_patches=Util.superimpose_points_on_image(np_input_image,lst_allpoints_from_all_patches,100,255,100)
     skimage.io.imsave(file_result,np_superimposed_patches)
+    print("Results save to file:%s" % (file_result))
 
     pass
 
-run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=25)
+#run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=50)
+#run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
+run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=200)
+#run("Cubic-W=500.H=200.MAXD=15.SP=0.90.3.png.3.png", patchdimension=50)
+

@@ -11,6 +11,7 @@ class RansacPatchInfo(object):
         self._bottomright=Point(bottomright_x,bottomright_y)
         self._tag=None
         self._ransacinfo:List[RansacLineInfo]=[]
+        self._allpoints:List[Point]=[]
         pass
 
 
@@ -41,12 +42,21 @@ class RansacPatchInfo(object):
         """Sets all the ransac lines in this patch"""
         self._ransacinfo=ransaclines
 
+    @property
+    def allpoints(self):
+        """The Point objects in the image that were used for ransac calculations"""
+        return self._allpoints
+
+    @allpoints.setter
+    def allpoints(self, value):
+        self._allpoints = value
+
     def __str__(self):
-        display= ("topleft=(%d,%d)  bottomright=(%d,%d") % (self.topleft.X,self.topleft.Y,self.bottomright.X,self.bottomright.Y)
+        display= self.__repr__()
         return display
 
     def __repr__(self):
-        display= ("topleft=(%d,%d)  bottomright=(%d,%d") % (self.topleft.X,self.topleft.Y,self.bottomright.X,self.bottomright.Y)
+        display= ("topleft=(%d,%d)  bottomright=(%d,%d)  count of ransac lines=%d") % (self.topleft.X,self.topleft.Y,self.bottomright.X,self.bottomright.Y, len(self.ransacinfo))
         return display
 
 

@@ -40,7 +40,10 @@ class RansacAlgorithm(object):
         results=[]
         for unique_model in candidate_models:
             new_ransac_line = RansacLineInfo()
-            new_ransac_line.inliers=unique_model.Inliers #combine Inliers and Seed
+            all_inliers=set()
+            all_inliers.update(unique_model.Inliers)
+            all_inliers.update(unique_model.SeedPoints)
+            new_ransac_line.inliers=all_inliers
             new_ransac_line.line=unique_model.LineModel
             results.append(new_ransac_line)
         return results
