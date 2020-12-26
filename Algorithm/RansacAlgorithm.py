@@ -48,17 +48,6 @@ class RansacAlgorithm(object):
             results.append(new_ransac_line)
         return results
 
-        '''
-        linePerp:RansacLineInfo=RansacLineInfo()
-        linePerp.line = LineModel(1,0,-self.Width/2)
-        linePerp.inliers=[Point(self.Width/2,0),Point(self.Width/2, self.Height)]
-
-        lineHor=RansacLineInfo()
-        lineHor.line = LineModel(0,1,-self.Height/3)
-        lineHor.inliers = [Point(0,self.Height/3), Point(self.Width,self.Height/3)]
-        return [linePerp,lineHor]
-        '''
-
     def expand_models_using_inliers(self,line_models):
         """
         Improve the line model by recalculating a new best fit new line using the new inliers
@@ -102,33 +91,33 @@ class RansacAlgorithm(object):
         model_with_min_ssd=min(models_with_maxinliers, key= lambda  x: x.SumOfSquaredDistance)
         return model_with_min_ssd
 
-    def eliminate_duplicates_using_hough_accumulator(self,expanded_models):
-        """
-        Work in progress - the idea was inspired by the voting approach of Hough transform 
-        to distinguish multiple RANSAC lines in a single picture
-        Create a polar equation from the standard line equation
-        Find accumulator index using polar equation
-        Find all cells in the accumulator which have 1 or more entries
-        For each of these cells pick the line with best score (which score? highest inlier count, lowest SSD)
-        """
-        diag=math.sqrt(self.Width**2 + self.Height**2)
-        hough_accumulator=HoughAccumator(diag)
-        expanded_model:LineModelExtended
-        for expanded_model in expanded_models:
-            line_model=expanded_model.LineModel
-            polar_line=PolarLineModel.generate_polar_equation(line_model)
-            hough_accumulator.add_polar_line(polar_line)
-            pass
+    # def eliminate_duplicates_using_hough_accumulator(self,expanded_models):
+    #     """
+    #     Work in progress - the idea was inspired by the voting approach of Hough transform 
+    #     to distinguish multiple RANSAC lines in a single picture
+    #     Create a polar equation from the standard line equation
+    #     Find accumulator index using polar equation
+    #     Find all cells in the accumulator which have 1 or more entries
+    #     For each of these cells pick the line with best score (which score? highest inlier count, lowest SSD)
+    #     """
+    #     diag=math.sqrt(self.Width**2 + self.Height**2)
+    #     hough_accumulator=HoughAccumator(diag)
+    #     expanded_model:LineModelExtended
+    #     for expanded_model in expanded_models:
+    #         line_model=expanded_model.LineModel
+    #         polar_line=PolarLineModel.generate_polar_equation(line_model)
+    #         hough_accumulator.add_polar_line(polar_line)
+    #         pass
 
-        best_line_from_each_cell=[]
-        for accumulator_cell in hough_accumulator.cells:
-            if (len(accumulator_cell.votes) == 0):
-                continue
-            all_lines_in_cell=accumulator_cell.Lines
-            line_with_highest_inlier=max(all_lines_in_cell, key=lambda x: len(x.Inliers))
-            best_line_from_each_cell.append(line_with_highest_inlier)
-        return best_line_from_each_cell
-        pass
+    #     best_line_from_each_cell=[]
+    #     for accumulator_cell in hough_accumulator.cells:
+    #         if (len(accumulator_cell.votes) == 0):
+    #             continue
+    #         all_lines_in_cell=accumulator_cell.Lines
+    #         line_with_highest_inlier=max(all_lines_in_cell, key=lambda x: len(x.Inliers))
+    #         best_line_from_each_cell.append(line_with_highest_inlier)
+    #     return best_line_from_each_cell
+    #     pass
 
     def __create_pairs_of_points(self):
         """

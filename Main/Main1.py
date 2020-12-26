@@ -22,7 +22,8 @@ def run(inputfilename:str,patchdimension:int):
     for patch_result in patch_results:
         for ransac_line in patch_result.ransacinfo:
             projected_inliers=ransac_line.projected_inliers
-            all_projections.extend(projected_inliers)  #the Y needs to be inverted new_y=ht-old_y
+            #projected_inliers=ransac_line.inliers
+            all_projections.extend(projected_inliers)  
 
     np_superimposed_patches=Util.superimpose_points_on_image(np_input_image,all_projections,100,255,100)
     
@@ -34,5 +35,6 @@ def run(inputfilename:str,patchdimension:int):
 
 
 
-run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
+#run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
+run("Large.SampleWith1ProminentLine.png", patchdimension=100)
 
