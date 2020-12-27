@@ -44,6 +44,6 @@ def dump_info(patch_results):
     pass
 
 
-#run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
+run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
 run("Large.SampleWith1ProminentLine.png", patchdimension=100)
 

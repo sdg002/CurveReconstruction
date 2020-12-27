@@ -76,5 +76,18 @@ class Test_PatchByPatchRansac(unittest.TestCase):
         self.assertEqual(len(one_only_one_line.inliers), 3, '3 inlier points expected')
         self.assertLessEqual(abs(one_only_one_line.line.A),0.001,"The one and only one line is horizontal")
 
+    def test_WithLargeFile_3VerticalPoints(self):
+        folder_script=os.path.dirname(__file__)
+        file_test_image=os.path.join(folder_script,"./data/","Large.Samplewith1VertLine.png")
+        algo = PatchByPatchRansac(file_test_image)
+        algo.Dimension=80
+        algo.ransac_threshold_distance=7
+        ransac_patches=algo.run()
+        self.assertEqual(len(ransac_patches), 4, '4 patches expected when image dimensions are 100X100 and patch size is 80')
+
+        one_only_one_line = ransac_patches[3].ransacinfo[0]
+        self.assertEqual(len(one_only_one_line.inliers), 3, '3 inlier points expected')
+        self.assertLessEqual(abs(one_only_one_line.line.B),0.001,"The one and only one line is vertical")
+
 if __name__ == '__main__':
     unittest.main()
