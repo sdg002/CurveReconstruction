@@ -147,30 +147,18 @@ class RansacAlgorithm(object):
     def __get_good_temp_models(self, line_models,already_discovered_models):
         """
         Calculatates inliners for the specified models and returns those which exceed threshold
+        Lines whose seeds points are already used up in the formation of already discovered lines are excluded
         """
-        already_used_inlier_points:Dict[int,Point]=dict() # to be done , collect all inliers from all discovered models
-        #create a dictionary of these Points
-        for model in already_discovered_models:
-            inlier:Point
-            for inlier in model.Inliers:
-                already_used_inlier_points[inlier.ID]=inlier
-            seed:Point
-            for seed in model.SeedPoints:
-                already_used_inlier_points[seed.ID]=inlier
-
-
         results:List[LineModelExtended]=[]
         line_model_ex:LineModelExtended
         for line_model_ex in line_models:
-            seed_points=line_model_ex.SeedPoints
-            #Check if the seed points are used as inliers in already discovered models
-            already_used_seed_points=list(filter(lambda  point: (point.ID in already_used_inlier_points.keys()), seed_points))
-            if (len(already_used_seed_points) == len(seed_points)):
+            candidate_line_where_seed_points_usedup=self.__get_already_discovered_line_where_candidate_seed_points_have_been_used(line_model_ex,already_discovered_models)
+            can_proceed_with_line = True if (candidate_line_where_seed_points_usedup==None) else False
+
+            if (can_proceed_with_line==False):
                 continue
             inliers:List[Point]=[]            
             for point in self.Points:
-                if (point in line_model_ex.SeedPoints):
-                    continue
                 distance=line_model_ex.LineModel.compute_distance(point)
                 if (distance > self.ThresholdDistance):
                     continue
@@ -180,6 +168,52 @@ class RansacAlgorithm(object):
             good_model=LineModelExtended(line_model_ex.LineModel,line_model_ex.SeedPoints,inliers)
             results.append(good_model)
         return results
+
+    def __get_already_discovered_line_where_candidate_seed_points_have_been_used(self,candidate_model,already_discovered_models:[]):
+        seed_points=candidate_model.SeedPoints
+        for discovered_model in already_discovered_models:
+            discovered_model_points:List[Point]=[]
+            discovered_model_points.extend(discovered_model.SeedPoints)
+            discovered_model_points.extend(discovered_model.Inliers)
+            if ((seed_points[0] in discovered_model_points) and (seed_points[1] in discovered_model_points)):
+                return discovered_model
+        return None
+
+    # def __get_good_temp_models_2(self, line_models,already_discovered_models):
+    #     """
+    #     Calculatates inliners for the specified models and returns those which exceed threshold
+    #     This was the older approach - we were eliminating a candidate line even if one it seed point was used up in Line1 and another in Line2
+    #     """
+    #     already_used_inlier_points:Dict[int,Point]=dict() # to be done , collect all inliers from all discovered models
+    #     #create a dictionary of these Points
+    #     for model in already_discovered_models:
+    #         inlier:Point
+    #         for inlier in model.Inliers:
+    #             already_used_inlier_points[inlier.ID]=inlier
+    #         seed:Point
+    #         for seed in model.SeedPoints:
+    #             already_used_inlier_points[seed.ID]=inlier
+    #     results:List[LineModelExtended]=[]
+    #     line_model_ex:LineModelExtended
+    #     for line_model_ex in line_models:
+    #         seed_points=line_model_ex.SeedPoints
+    #         #Check if the seed points are used as inliers in already discovered models
+    #         already_used_seed_points=list(filter(lambda  point: (point.ID in already_used_inlier_points.keys()), seed_points))
+    #         if (len(already_used_seed_points) == len(seed_points)):
+    #             continue
+    #         inliers:List[Point]=[]            
+    #         for point in self.Points:
+    #             if (point in line_model_ex.SeedPoints):
+    #                 continue
+    #             distance=line_model_ex.LineModel.compute_distance(point)
+    #             if (distance > self.ThresholdDistance):
+    #                 continue
+    #             inliers.append(point)
+    #         if (len(inliers)==0):
+    #             continue
+    #         good_model=LineModelExtended(line_model_ex.LineModel,line_model_ex.SeedPoints,inliers)
+    #         results.append(good_model)
+    #     return results
 
     #
     #Find the best line which fits the specified points

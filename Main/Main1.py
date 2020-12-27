@@ -17,6 +17,7 @@ def run(inputfilename:str,patchdimension:int):
     patch_algo=PatchByPatchRansac(file_noisy_curve)
     patch_algo.Dimension=patchdimension
     patch_results:List[RansacPatchInfo]=patch_algo.run()
+    dump_info(patch_results)
     patch_result:RansacPatchInfo
     all_projections:List[Point]=list()
     for patch_result in patch_results:
@@ -32,7 +33,15 @@ def run(inputfilename:str,patchdimension:int):
     file_result=os.path.join(folder_script,"./out/",filename_result)
     io.imsave(file_result,np_superimposed_patches)
     print("Results save to file:%s" % (file_result))
+    
 
+def dump_info(patch_results):
+    print(("Found %d ransac patches") % (len(patch_results)))
+    for patch_result in patch_results:
+        print("\tpatch %s" % (patch_result))
+        for ransac_line in patch_result.ransacinfo:
+            print("\t\tline %s" % (ransac_line))
+    pass
 
 
 #run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)

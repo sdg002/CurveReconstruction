@@ -18,6 +18,7 @@ class PatchByPatchRansac(object):
         self._np_image=None
         self._image_width=float(0)
         self._image_height=float(0)
+        self.ransac_threshold_distance=10 #distance from line for a point to be an inlier
 
     @property
     def Dimension(self)->int:
@@ -90,6 +91,14 @@ class PatchByPatchRansac(object):
             old_xintercept=-old_model.C/old_model.A
             c_new=-(delta_origin_x +old_xintercept)
             return LineModel(a_new, b_new, c_new)
+        elif (old_model.A == 0):
+            #horizontal line
+            b_new=1
+            a_new=0
+            delta_origin_y=(self._image_height - patch.bottomright.Y)
+            old_yintercept=-old_model.C/old_model.B
+            c_new=-(delta_origin_y+old_yintercept)
+            return LineModel(a_new,b_new,c_new)
         else:
             new_xintercept= (-old_model.C/old_model.A) + patch.topleft.X
             new_xintercept_y=(self._image_height - patch.bottomright.Y)
@@ -104,6 +113,7 @@ class PatchByPatchRansac(object):
         width=img_patchregion.shape[1]
         points=Util.create_points_from_numpyimage(img_patchregion)
         algo=RansacAlgorithm(width,height,points)
+        algo.ThresholdDistance=self.ransac_threshold_distance
         ransac_lines:List[RansacLineInfo]=algo.run()
         new_patchinfo:RansacPatchInfo=RansacPatchInfo(patchinfo.topleft.X,patchinfo.topleft.Y,patchinfo.bottomright.X,patchinfo.bottomright.Y )
         new_patchinfo.ransacinfo=ransac_lines

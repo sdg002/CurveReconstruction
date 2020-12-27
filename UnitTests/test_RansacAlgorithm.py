@@ -31,7 +31,7 @@ class Test_testRansac(unittest.TestCase):
 
         algo=RansacAlgorithm(width,height,points)
         results:List[RansacLineInfo]=algo.run()
-        self.assertEqual(len(results), 2, 'Even though there is only 1 prominent line, 2 lines should be returned. The second line has far fewer inliers than the first')
+        self.assertGreaterEqual(len(results), 2, 'Even though there is only 1 prominent line, 2 lines should be returned. The second line has far fewer inliers than the first')
         first_line:RansacLineInfo=results[0]
         self.assertGreaterEqual(len(first_line.inliers), 10, 'Inliers should be correctly detected')
         self.assertLessEqual(len(first_line.inliers), 11, 'Inliers should be correctly detected')
@@ -50,7 +50,8 @@ class Test_testRansac(unittest.TestCase):
 
         algo=RansacAlgorithm(width,height,points)
         results:List[RansacLineInfo]=algo.run()
-        self.assertEqual(len(results), 2, 'message')
+        self.assertGreaterEqual(len(results), 2, 'A minimum of 2 lines must have been discovered')
+
         first_line:RansacLineInfo=results[0]
         self.assertGreaterEqual(len(first_line.inliers), 10, 'Inliers should be correctly detected')
         self.assertLessEqual(len(first_line.inliers), 13, 'Inliers should be correctly detected')
@@ -99,9 +100,6 @@ class Test_testRansac(unittest.TestCase):
         algo=RansacAlgorithm(20,20,[])
         results:List[RansacLineInfo]=algo.run()
         self.assertEqual(len(results), 0, 'Zero ransac lines should be returned')
-
-
-
     
 if __name__ == '__main__':
     unittest.main()
