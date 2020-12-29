@@ -82,3 +82,4 @@ def overlay_lines_on_original_image(filename:str,patch_results:List[RansacPatchI
 run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
 run("Cosine-W=500.H=200.MAXD=20.SP=0.95.9.png", patchdimension=100)
 run("Large.SampleWith1ProminentLine.png", patchdimension=100)
+run("Cubic-W=500.H=200.MAXD=15.SP=0.90.8.png.8.png", patchdimension=100)
