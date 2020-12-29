@@ -3,16 +3,19 @@ from .Point import Point
 from typing import Union, Any, List, Optional, cast
 from Common import Util
 import math
+import numpy as np
 
 class RansacLineInfo(object):
     """Represents all information of a single Line that has been determined via Ransac algo"""
     def __init__(self):
         self._line:LineModel=None
         self._inliers=[]
-        self._projected_inliers=None #Projecton of inlier points on the Ransac line
+        self._projected_inliers=None #Projecton of inlier points on the Ransac line (used for display only , ignore otherwise)
         self._arranged_inliers=None
         self._length=-1
-        pass
+        self._inlier_distribution_index=-1
+        self._bin_width=0
+        self._projected_inliers2=None #Projecton of inlier points on the Ransac line
 
     @property
     def line(self)->LineModel:
@@ -95,5 +98,43 @@ class RansacLineInfo(object):
         """The ratio of the count of inliers to the length of the Ransac line segment."""
         return len(self.inliers)/self.length
 
+    @property
+    def inlier_distribution_index(self):
+        """The ratio of bins which have 1 or more projected inliers to total number of bins on the line segment between the projected terminal points"""
+        if (self.bin_width ==0):
+            raise Exception("The bin_width property should be set before the inliers can be distributed into bins")            
 
-            
+        if (self._inlier_distribution_index != -1):
+            return self._inlier_distribution_index
+        distances_from_first_terminal_point:List[float]=[]
+                
+        first_terminal_point=self.sequenced_inliers[0]
+        for projected_point in self.projected_inliers2:
+            distance_from_first_terminal_point=Point.euclidean_distance(first_terminal_point,projected_point)
+            t_value=distance_from_first_terminal_point
+            distances_from_first_terminal_point.append(t_value)
+        
+        #adding the bin_width to the end value of the bin to ensure inclusion
+        bins=np.arange(0,self.length+self.bin_width,self.bin_width) 
+        histogram=np.histogram(a=distances_from_first_terminal_point, bins=bins,density=False)
+        total_bins=len(histogram[0])
+        total_occupied_bins=np.count_nonzero(histogram[0])
+        self._inlier_distribution_index=total_occupied_bins/total_bins
+        return self._inlier_distribution_index
+
+    @property
+    def projected_inliers2(self):
+        """ Returns the projection of every inlier on the ransac line"""
+        if (self._projected_inliers2 != None):
+            return self._projected_inliers2
+        self._projected_inliers2=LineModel.compute_projection_of_points(self.line,self.sequenced_inliers)
+        return self._projected_inliers2
+
+    @property
+    def bin_width(self):
+        """The size of the bin on the ransac line which will be used for binning the projection of the inliers"""
+        return self._bin_width
+
+    @bin_width.setter
+    def bin_width(self, value):
+        self._bin_width = value

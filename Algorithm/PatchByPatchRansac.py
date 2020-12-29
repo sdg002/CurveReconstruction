@@ -63,6 +63,7 @@ class PatchByPatchRansac(object):
             new_ransaclines:List[RansacLineInfo]=[]
             for orginal_line in original_patch_info.ransacinfo:
                 new_ransacline:RansacLineInfo=RansacLineInfo()
+                new_ransacline.bin_width=self.ransac_threshold_distance
                 new_inliers:List[Point]=[]
                 for original_inlier in orginal_line.inliers:
                     new_X=new_patchinfo.topleft.X+original_inlier.X

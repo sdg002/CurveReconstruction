@@ -75,6 +75,58 @@ class Test_RansacLineInfo(unittest.TestCase):
         actual_density=3/actual_distance
         self.assertAlmostEqual(computed_density,actual_density,delta=0.01)
 
+    def test_when_property_projected_inliers2_is_invoked_on_line_which_passes_through_origin_and_at_45degrees(self):
+        sut:RansacLineInfo=RansacLineInfo()
+        #https://www.desmos.com/calculator
+        p1=Point(0.8,1.2)
+        p2=Point(2.2,1.8)
+        p3=Point(2.6,3.4)
+
+        p1_expected=Point(1,1)
+        p2_expected=Point(2,2)
+        p3_expected=Point(3,3)
+
+        sut.line=LineModel(-1,1,0)
+        sut.inliers=[ p2,p1,p3]  #shuffle deliberately
+        actual_projections=sut.projected_inliers2
+        self.assertEqual(3, len(actual_projections), 'The count of projected inliers must match the count of inliers')
+
+        self.assertEqual(p1_expected.X, actual_projections[0].X, 'The projected point must match expected')
+        self.assertEqual(p1_expected.Y, actual_projections[0].Y, 'The projected point must match expected')
+        
+        self.assertEqual(p2_expected.X, actual_projections[1].X, 'The projected point must match expected')
+        self.assertEqual(p2_expected.Y, actual_projections[1].Y, 'The projected point must match expected')
+
+        self.assertEqual(p3_expected.X, actual_projections[2].X, 'The projected point must match expected')
+        self.assertEqual(p3_expected.Y, actual_projections[2].Y, 'The projected point must match expected')
+
+    def test_inlier_distribution_index_2inliers_1binwidth(self):
+        sut:RansacLineInfo=RansacLineInfo()
+        #length of the inlier=3
+        p1=Point(1,1)
+        p3=Point(4,4)
+        sut.line=LineModel(-1,1,0)
+        sut.inliers=[ p1,p3]
+        sut.bin_width=1
+        actual_distribution=sut.inlier_distribution_index
+        expected_distribution=2/5
+        self.assertAlmostEqual(expected_distribution, actual_distribution, delta=0.01,msg='The distribution index must match expected')
+
+    def test_inlier_distribution_index_4inliers_1binwidth(self):
+        sut:RansacLineInfo=RansacLineInfo()
+        #length of the inlier=3
+        p1=Point(1,1)
+        p2=Point(2,2)
+        p3=Point(3,3)
+        p4=Point(4,4)
+        sut.line=LineModel(-1,1,0)
+        sut.inliers=[ p1,p2,p3,p4]
+        sut.bin_width=1
+        actual_distribution=sut.inlier_distribution_index
+        expected_distribution=4/5
+        self.assertAlmostEqual(expected_distribution, actual_distribution, delta=0.01,msg='The distribution index must match expected')
+
+
 if __name__ == '__main__':
     unittest.main()
 
