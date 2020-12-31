@@ -9,6 +9,7 @@ from Common import Point
 from Common import LineModel
 from Algorithm import RansacAlgorithm
 from Common import RansacLineInfo
+import numpy as np
 
 class PatchByPatchRansac(object):
     """Implements Ransacl algorithm by splitting a large image into patches"""
@@ -19,6 +20,7 @@ class PatchByPatchRansac(object):
         self._image_width=float(0)
         self._image_height=float(0)
         self.ransac_threshold_distance=10 #distance from line for a point to be an inlier
+        self.__junk=111
 
     @property
     def Dimension(self)->int:
@@ -34,6 +36,18 @@ class PatchByPatchRansac(object):
         self._image_height=self._np_image.shape[0]
         self._image_width=self._np_image.shape[1]
 
+    def run1(self)->np.ndarray:
+        """The flat results are reshaped into  2d Numpy array of RansacPatchInfo object instances"""
+        patches=self.run()
+        
+        max_x=max(list(map(lambda  p: p.x, patches)))
+        max_y=max(list(map(lambda  p: p.y, patches)))
+
+        new_array = np.empty((max_y+1,max_x+1),dtype='object')
+        for patch in patches:
+            new_array[patch.y][patch.x]=patch
+        return new_array
+
     def run(self)->List[RansacPatchInfo]:
         if (self.Dimension <= 0):
             raise ValueError("The Dimension should be a positive value")
@@ -48,6 +62,8 @@ class PatchByPatchRansac(object):
             for y in range(0,patchcount_y):
                 patchinfo:PatchInfo=patch_results.get_patch_xy(x,y)
                 ransac_patch:RansacPatchInfo=self.__find_ransac_lines(patchinfo)
+                ransac_patch.x=x
+                ransac_patch.y=y
                 ransac_patches.append(ransac_patch)
                 print("\tpatch, x=%d, y=%d info=%s" % (x,y,ransac_patch))
         return self.__translate_from_patch_coordinate2parent(ransac_patches)
@@ -60,6 +76,8 @@ class PatchByPatchRansac(object):
         results:List[RansacPatchInfo]=[]
         for original_patch_info in raw_patches:
             new_patchinfo=RansacPatchInfo(original_patch_info.topleft.X,original_patch_info.topleft.Y,original_patch_info.bottomright.X,original_patch_info.bottomright.Y)
+            new_patchinfo.x=original_patch_info.x
+            new_patchinfo.y=original_patch_info.y
             new_ransaclines:List[RansacLineInfo]=[]
             for orginal_line in original_patch_info.ransacinfo:
                 new_ransacline:RansacLineInfo=RansacLineInfo()

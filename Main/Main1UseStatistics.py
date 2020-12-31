@@ -12,7 +12,7 @@ import statistics
 import numpy as np
 
 #
-#to be done - use the median calculation of Main1 and plot only "high valued" lines
+#In this script, the median value of the distribution coefficient is first calculated and only lines which are above this value are plotted
 #
 
 

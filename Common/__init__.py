@@ -8,6 +8,7 @@ from .PatchInfo import *
 from .RansacLineInfo import *
 from .RansacPatchInfo import *
 from .PolarLineModel import *
+from .ConnectedLines import *
 
 __all__ = ["Point", 
            "LineModel",
@@ -19,4 +20,5 @@ __all__ = ["Point",
            "PatchResults",
            "RansacLineInfo",
            "RansacPatchInfo",
-           "PolarLineModel"]
+           "PolarLineModel",
+           "ConnectedLines"]

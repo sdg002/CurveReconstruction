@@ -1,10 +1,12 @@
 import unittest
 from Algorithm import PatchByPatchRansac
-import os
 from Common import RansacPatchInfo
 from Common import RansacLineInfo
-from typing import Union, Any, List, Optional, cast
 from Common import Point
+from typing import Union, Any, List, Optional, cast
+import os
+import numpy as np
+
 
 class Test_PatchByPatchRansac(unittest.TestCase):
     def test_Constructor(self):
@@ -14,7 +16,7 @@ class Test_PatchByPatchRansac(unittest.TestCase):
 
     def test_WithLargeFile(self):
         folder_script=os.path.dirname(__file__)
-        file_test_image=os.path.join(folder_script,"./data/","Large.SampleWith1ProminentLine.png")
+        file_test_image=os.path.join(folder_script,"./data/PatchByPatchRansac","Large.SampleWith1ProminentLine.png")
         algo = PatchByPatchRansac(file_test_image)
         algo.Dimension=80
         algo.ransac_threshold_distance=7
@@ -65,7 +67,7 @@ class Test_PatchByPatchRansac(unittest.TestCase):
 
     def test_WithLargeFile_3HorizontalPoints(self):
         folder_script=os.path.dirname(__file__)
-        file_test_image=os.path.join(folder_script,"./data/","Large.Samplewith1HorLine.png")
+        file_test_image=os.path.join(folder_script,"./data/PatchByPatchRansac","Large.Samplewith1HorLine.png")
         algo = PatchByPatchRansac(file_test_image)
         algo.Dimension=80
         algo.ransac_threshold_distance=7
@@ -78,7 +80,7 @@ class Test_PatchByPatchRansac(unittest.TestCase):
 
     def test_WithLargeFile_3VerticalPoints(self):
         folder_script=os.path.dirname(__file__)
-        file_test_image=os.path.join(folder_script,"./data/","Large.Samplewith1VertLine.png")
+        file_test_image=os.path.join(folder_script,"./data/PatchByPatchRansac","Large.Samplewith1VertLine.png")
         algo = PatchByPatchRansac(file_test_image)
         algo.Dimension=80
         algo.ransac_threshold_distance=7
@@ -88,6 +90,27 @@ class Test_PatchByPatchRansac(unittest.TestCase):
         one_only_one_line = ransac_patches[3].ransacinfo[0]
         self.assertEqual(len(one_only_one_line.inliers), 3, '3 inlier points expected')
         self.assertLessEqual(abs(one_only_one_line.line.B),0.001,"The one and only one line is vertical")
+
+    def test_method_run1_using_LargeFile_pathcdimension_80(self):
+        folder_script=os.path.dirname(__file__)
+        file_test_image=os.path.join(folder_script,"./data/PatchByPatchRansac","Large.SampleWith1ProminentLine.png")
+        algo = PatchByPatchRansac(file_test_image)
+        algo.Dimension=80
+        algo.ransac_threshold_distance=7
+        arr:np.ndarray=algo.run1()
+        self.assertEqual(3,arr.shape[0] , 'The shape of the array must be equal to the number of cells along Y axis')
+        self.assertEqual(4,arr.shape[1] , 'The shape of the array must be equal to the number of cells along Y axis')
+
+    def test_method_run1_using_LargeFile_pathcdimension_100(self):
+        folder_script=os.path.dirname(__file__)
+        file_test_image=os.path.join(folder_script,"./data/PatchByPatchRansac","Large.SampleWith1ProminentLine.png")
+        algo = PatchByPatchRansac(file_test_image)
+        algo.Dimension=100
+        algo.ransac_threshold_distance=7
+        arr:np.ndarray=algo.run1()
+        self.assertEqual(2,arr.shape[0] , 'The shape of the array must be equal to the number of cells along Y axis')
+        self.assertEqual(3,arr.shape[1] , 'The shape of the array must be equal to the number of cells along Y axis')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -12,7 +12,8 @@ class RansacPatchInfo(object):
         self._tag=None
         self._ransacinfo:List[RansacLineInfo]=[]
         self._allpoints:List[Point]=[]
-        pass
+        self.x=-1 #The zero based index of the patch element along X axis
+        self.y=-1 #The zero based index of the patch element along Y axis
 
 
     @property

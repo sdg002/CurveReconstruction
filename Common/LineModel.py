@@ -191,3 +191,8 @@ class LineModel:
             intersection=np.linalg.solve(arr_lhs,arr_rhs)
             lst_projections.append(Point(intersection[0],intersection[1]))
         return lst_projections
+
+    @classmethod
+    def compute_perpendicular_line_through_origin(cls,line):
+        """ Calculates the model of the Line which is perpendicular to the specified Line """
+        return LineModel(line.B, -line.A, 0)

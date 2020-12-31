@@ -34,6 +34,9 @@ class PolarLineModel(object):
         display=("rho=%f  theta=%f")%(self.rho,self.theta)
         return display
 
+    def __str__(self):
+        return self.__repr__()
+
     @classmethod
     def _calculate_point_closest_to_origin(cls,model:LineModel):
         s=model.A**2+model.B**2
@@ -52,3 +55,28 @@ class PolarLineModel(object):
             return 2
         else:
             return 3
+
+    @classmethod
+    def generate_polar_equation_hough(cls, model:LineModel):
+        """ The values of theta will vary from +90 to -89  and rho varies from -R to +R"""
+        distance_of_perp_from_origin:float =model.compute_distance(Point(0,0))
+        point_closest_origin= PolarLineModel._calculate_point_closest_to_origin(model)
+        
+        rho:float=0
+        if (point_closest_origin.Y > 0):
+            rho=distance_of_perp_from_origin
+        else:
+            rho=-distance_of_perp_from_origin
+
+        perp_model:LineModel=LineModel.compute_perpendicular_line_through_origin(model)
+
+        theta:float=0
+        if (abs(perp_model.B) < 0.001):
+            theta=math.pi/2  #Line is nearly 90 degrees
+        else:
+            slope=-(perp_model.A/perp_model.B)
+            if (slope > 0):
+                theta=math.atan(slope)
+            else:
+                theta=math.atan(slope)
+        return PolarLineModel(rho,theta)

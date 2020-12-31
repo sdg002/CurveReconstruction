@@ -58,5 +58,25 @@ class Test_TestPolarCoordinates(unittest.TestCase):
             self.assertAlmostEqual(actual_polar_line.theta, expected_polar[1],2,'The theta of the polar equation should match')
             self.assertAlmostEqual(actual_polar_line.rho, expected_polar[0],2,'The rho of the polar equation should match')
 
+
+    def test_PolarLine_Hough_Transformation(self):
+
+        test_cases=[]
+        test_cases.append((LineModel(-1,-1,+1),PolarLineModel(+0.707,+0.785),"Line with Slope 1 and passing through +1,0 and 0,+1."))
+        test_cases.append((LineModel(+1,+1,+1),PolarLineModel(-0.707,+0.785),"Line with Slope 1 and passing through -1,0 and 0,-1"))
+        test_cases.append((LineModel(+1,-1,+1),PolarLineModel(+0.707,-0.785),"Line with Slope 1 and passing through -1,0 and 0,+1"))
+        test_cases.append((LineModel(-1,+1,+1),PolarLineModel(-0.707,-0.785),"Line with Slope 1 and passing through +1,0 and 0,-1"))
+
+        #45 degrees=0.785 radians
+
+        for test_index in range(0,len(test_cases)):
+            test_model:LineModel=test_cases[test_index][0]
+            expected_polar:PolarLineModel=test_cases[test_index][1]
+            actual_polar_line=PolarLineModel.generate_polar_equation_hough(test_model)
+
+            self.assertAlmostEqual(actual_polar_line.theta, expected_polar.theta,2,'The theta of the polar equation should match')
+            self.assertAlmostEqual(actual_polar_line.rho, expected_polar.rho,2,'The rho of the polar equation should match')
+            
+
 if __name__ == '__main__':
     unittest.main()
