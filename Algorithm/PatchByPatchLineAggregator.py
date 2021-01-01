@@ -34,6 +34,75 @@ class PatchByPatchLineAggregator():
                 result[y][x]=connected_lines
         return result
 
+    def find_connected_lines_in_across_all_patches(self,array_adjacent_patches)->List[ConnectedLines]:
+        """
+        Takes an numpy array where every member is a List of ConnectedLines objects
+        The input  represents a cluster of lines in a 2x2 patch region
+
+        The function collects all the RansacLineInfo objects and builds a connectivity matrix
+        which spans all the cells of the input array
+        """
+        line_cluster_lookup=dict() #the ransac_line is the key, value is a List of 1 or more cluster objects which contains this ransac_line
+        all_ransac_lines:List[RansacLineInfo]=list()
+        #for cell in np.nditer(array_adjacent_patches,["refs_ok"]):
+        for row in array_adjacent_patches:
+            for cell in row:
+                if ((cell == None) or (len(cell)==0)):
+                    continue
+                for connected_lines in cell:
+                    for ransac_line in connected_lines.ransac_lines:
+                        if ((ransac_line in all_ransac_lines) == False):
+                            all_ransac_lines.append(ransac_line)
+                        if ((ransac_line in line_cluster_lookup.keys()) ==False):
+                            line_cluster_lookup[ransac_line]=set()
+                        line_cluster_lookup[ransac_line].add(connected_lines)
+                
+        connectivity_matrix=np.zeros((len(all_ransac_lines),len(all_ransac_lines)),dtype='int')
+        
+        for x in range(0,len(all_ransac_lines)):
+            line_x=all_ransac_lines[x]
+            clusters_with_line_x=line_cluster_lookup[line_x]
+            for connected_lines in clusters_with_line_x:
+                for line_y in connected_lines.ransac_lines:
+                    y=all_ransac_lines.index(line_y)
+                    connectivity_matrix[y,x]=1
+                    connectivity_matrix[x,y]=1
+
+        results:[ConnectedLines]=[]
+        already_added_line_indices=set()
+        for line_index in range(0,len(all_ransac_lines)):
+            #array_of_connected_indices=connectivity_matrix[line_index]
+            if (line_index in already_added_line_indices):
+                continue
+            connected_lines=set()
+            self.__recursively_find_all_connected_lines(connectivity_matrix,line_index,connected_lines)
+            if (len(connected_lines) != 0):
+                new_cluster=ConnectedLines()
+                cluster_members=[all_ransac_lines[i] for i in connected_lines]
+                new_cluster.add_ransac_lines(cluster_members)
+                already_added_line_indices.update(connected_lines)
+                results.append(new_cluster)
+        return results
+
+    def __recursively_find_all_connected_lines(self,connectivity_matrix:np.ndarray,lineindex:int, resulting_connected_lines:set)->int:
+        arr=connectivity_matrix[lineindex]
+        count_of_connections_before=len(resulting_connected_lines)
+        for new_lineindex in range(0,len(arr)):
+            if (new_lineindex == lineindex):
+                continue
+            cell_value=arr[new_lineindex].item()
+            if (cell_value == 0):
+                #no connection, this line can be ignore
+                continue
+            if (new_lineindex in resulting_connected_lines):
+                #already added to cluster
+                continue
+            else:
+                resulting_connected_lines.add(new_lineindex)
+            self.__recursively_find_all_connected_lines(connectivity_matrix,new_lineindex,resulting_connected_lines)
+        count_of_connections_after=len(resulting_connected_lines)
+        return (count_of_connections_after-count_of_connections_before)
+
     @property
     def patches(self)->List[np.ndarray]:
         """The Numpy array of RansacPatchInfo objects """

@@ -122,5 +122,51 @@ class Test_PatchByPatchLineAggregator(unittest.TestCase):
     def test_Using_LargeFile_With_2ProminentLines_And_2X2_patches_Then_ShouldReturn_1_Cluster(self):
         raise Exception("Not yet implemented")
 
+
+    def  test_find_connected_lines_in_across_all_patches_3x3patches_and_1Cluster(self):
+        """
+        3x3 patches
+        Only diagonal patches have 2 ransac lines each
+        2   0   0
+        0   2   0
+        0   0   2
+        Overall 1 single cluster because of overallaping membership
+        """
+        line0=RansacLineInfo()
+        line1=RansacLineInfo()
+        line2=RansacLineInfo()
+        line3=RansacLineInfo()
+        line4=RansacLineInfo()
+        line5=RansacLineInfo()
+
+        array_of_patch_clusters=np.full((3,3), None,dtype="object")
+
+        cluster_0_0=ConnectedLines()
+        cluster_0_0.add_ransac_line(line0)
+        cluster_0_0.add_ransac_line(line1)
+
+        cluster_1_1=ConnectedLines()
+        cluster_1_1.add_ransac_line(line1)
+        cluster_1_1.add_ransac_line(line2)
+
+        cluster_2_2=ConnectedLines()
+        cluster_2_2.add_ransac_line(line2)
+        cluster_2_2.add_ransac_line(line3)
+
+        array_of_patch_clusters[0][0]=[cluster_0_0]
+        array_of_patch_clusters[1][1]=[cluster_1_1]
+        array_of_patch_clusters[2][2]=[cluster_2_2]
+
+        patch_aggregator=PatchByPatchLineAggregator(None)
+        list_of_connected_lines=patch_aggregator.find_connected_lines_in_across_all_patches(array_of_patch_clusters)
+        self.assertEqual(1, len(list_of_connected_lines), '1 cluster should be returned')
+        self.assertEqual(4, len(list_of_connected_lines[0].ransac_lines), 'The cluster should contain all the ransac lines')
+        self.assertTrue(line0 in list_of_connected_lines[0].ransac_lines)
+        self.assertTrue(line1 in list_of_connected_lines[0].ransac_lines)
+        self.assertTrue(line2 in list_of_connected_lines[0].ransac_lines)
+        self.assertTrue(line3 in list_of_connected_lines[0].ransac_lines)
+
+
+
 if __name__ == '__main__':
     unittest.main()

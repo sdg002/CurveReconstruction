@@ -17,6 +17,9 @@ class ConnectedLines(object):
     def add_ransac_line(self,line:RansacLineInfo):
         self.__ransac_lines.append(line)
 
+    def add_ransac_lines(self,lines:List[RansacLineInfo]):
+        self.__ransac_lines.extend(lines)
+
     @property
     def ransac_lines(self):
         """Returns the ransac lines that are members of this cluster."""
