@@ -11,11 +11,33 @@ from .ConnectedNodesHelper import ConnectedNodesHelper
 
 class PatchByPatchLineAggregator():
     """traverses the patches that were discovered by patch by patch RANSAC and attempts to connect the lines"""
-    def __init__(self, patches:np.ndarray):
+    def __init__(self, patches:np.ndarray, image_width:float, image_height:float):
         self.__patches:np.ndarray=patches
         self.distribution_threshold=0
         self.theta_threshold=0 #angle made by the perpendicular of the ransac line with the positive X axis
         self.rho_threshold=0 #distance of the ransac line from the origin
+        self.__minmax_scaler=None
+        self._image_width=float(image_width)
+        self._image_height=float(image_height)
+        self._epsilon=0
+    
+    @property
+    def epsilon(self):
+        """The epsilon property."""
+        return self._epsilon
+
+    @property
+    def min_max_scaler(self)->MinMaxScaler:
+        """Creates a Min Max scaler object using the maximum extents possible"""
+        if (self.__minmax_scaler != None):
+            return self.__minmax_scaler
+
+        scaler = MinMaxScaler(feature_range=(1,100))
+        diagonal=math.sqrt(self._image_width**2 + self._image_height**2)
+        rho_theta_used_normalization=[[+diagonal,+math.pi/2],[-diagonal,-math.pi/2]]
+        scaler.fit(rho_theta_used_normalization)
+        self.__minmax_scaler=scaler
+        return self.__minmax_scaler
 
     def find_connected_lines_in_adjacent_patches(self)->np.ndarray:
         """ 
@@ -94,11 +116,17 @@ class PatchByPatchLineAggregator():
         list_rho_theta=list(map(lambda  p:[p.rho, p.theta],all_polar_lines))
         
 
-        scaler:MinMaxScaler = self.__create_min_max_scaler(list_rho_theta)
+        
+        scaler:MinMaxScaler = self.min_max_scaler
         normalized_rho_theta=scaler.transform(list_rho_theta)
+        #you want to calculate a value of epsilon,
+        #Attention! Not right to take just normalize the 'rho_threshold' , You will need to take the difference between normalized values some_rho and (some_rho+rho_threshold), 
+        #The value of 'some_rho' can be anything suitable in the range
+        normalized_zero_zero=scaler.transform([[0,0]])
         normalized_thresholds=scaler.transform([[self.rho_threshold,self.theta_threshold]])
-        epsilon=math.sqrt(normalized_thresholds[0][0]**2 + normalized_thresholds[0][1]**2)
-
+        delta_rho_threshold=normalized_thresholds[0][0]-normalized_zero_zero[0][0]
+        delta_theta_threshold=normalized_thresholds[0][1]-normalized_zero_zero[0][1]
+        epsilon=math.sqrt(delta_rho_threshold**2 + delta_theta_threshold**2)
 
         db=DBSCAN(eps=epsilon, min_samples=2)
         db.fit(normalized_rho_theta)

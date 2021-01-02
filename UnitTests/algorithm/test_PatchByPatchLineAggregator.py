@@ -20,7 +20,7 @@ class Test_PatchByPatchLineAggregator(unittest.TestCase):
 
     def test_ConstructorTests(self):
         some_array=np.ones((4,4))
-        sut=PatchByPatchLineAggregator(some_array)
+        sut=PatchByPatchLineAggregator(some_array,200,500)
         self.assertTrue(np.array_equal(some_array, sut.patches), 'the property patches must have been set')
         self.assertEqual(sut.theta_threshold,0)
         self.assertEqual(sut.rho_threshold,0)
@@ -40,7 +40,7 @@ class Test_PatchByPatchLineAggregator(unittest.TestCase):
         filter_handler=PatchByPatchStatisticalFilter(array_of_patches)
         filtered_array_of_patches=filter_handler.null_filter()
 
-        patch_aggregator=PatchByPatchLineAggregator(filtered_array_of_patches)
+        patch_aggregator=PatchByPatchLineAggregator(filtered_array_of_patches,algo.image_width, algo.image_height)
         patch_aggregator.rho_threshold=algo.ransac_threshold_distance
         patch_aggregator.theta_threshold= 10 * math.pi/180 #10 degrees        
         array_of_patches=patch_aggregator.find_connected_lines_in_adjacent_patches()
@@ -69,7 +69,7 @@ class Test_PatchByPatchLineAggregator(unittest.TestCase):
         filter_handler=PatchByPatchStatisticalFilter(array_of_patches)
         filtered_array_of_patches=filter_handler.null_filter()
 
-        patch_aggregator=PatchByPatchLineAggregator(filtered_array_of_patches)
+        patch_aggregator=PatchByPatchLineAggregator(filtered_array_of_patches,algo.image_width, algo.image_height)
         patch_aggregator.rho_threshold=algo.ransac_threshold_distance
         patch_aggregator.theta_threshold= 5 * math.pi/180 #5 degrees
         array_of_patches=patch_aggregator.find_connected_lines_in_adjacent_patches()
@@ -102,7 +102,7 @@ class Test_PatchByPatchLineAggregator(unittest.TestCase):
         filter_handler=PatchByPatchStatisticalFilter(array_of_patches)
         filtered_array_of_patches=filter_handler.filter_using_median_distributionindex()
 
-        patch_aggregator=PatchByPatchLineAggregator(filtered_array_of_patches)
+        patch_aggregator=PatchByPatchLineAggregator(filtered_array_of_patches,algo.image_width, algo.image_height)
         patch_aggregator.rho_threshold=algo.ransac_threshold_distance
         patch_aggregator.theta_threshold= 10 * math.pi/180 #10 degrees
         array_of_patches=patch_aggregator.find_connected_lines_in_adjacent_patches()
@@ -134,32 +134,34 @@ class Test_PatchByPatchLineAggregator(unittest.TestCase):
         filter_handler=PatchByPatchStatisticalFilter(array_of_patches)
         filtered_array_of_patches=filter_handler.filter_using_median_distributionindex()
 
-        patch_aggregator=PatchByPatchLineAggregator(filtered_array_of_patches)
+        patch_aggregator=PatchByPatchLineAggregator(filtered_array_of_patches,algo.image_width, algo.image_height)
         patch_aggregator.rho_threshold=algo.ransac_threshold_distance
         patch_aggregator.theta_threshold= 10 * math.pi/180 #10 degrees
         array_of_patches=patch_aggregator.find_connected_lines_in_adjacent_patches()
         flat_array_of_patches=array_of_patches.flatten()
 
         self.assertEqual(1, len(flat_array_of_patches), '1 resulting patches = (2-1)*(2-1)')
-        for clusters in flat_array_of_patches:
-            self.assertEqual(2, len(clusters), 'We expect 2 cluster of lines, i.e. a cluster with prominent large line and a cluster with the shorter line')
-            bigger_cluster=None
-            smaller_cluster=None
-            if len(clusters[0].ransac_lines[0].inliers) > len(clusters[1].ransac_lines[0].inliers):
-                bigger_cluster=clusters[0]
-                smaller_cluster=clusters[1]
-            else:
-                bigger_cluster=clusters[1]
-                smaller_cluster=clusters[0]
 
-            slope_of_bigger_cluster=math.atan(-bigger_cluster.ransac_lines[0].line.A/bigger_cluster.ransac_lines[0].line.B) * 180/math.pi
-            slope_of_smaller_cluster=math.atan(-smaller_cluster.ransac_lines[0].line.A/smaller_cluster.ransac_lines[0].line.B) * 180/math.pi
+        overall_clusters=patch_aggregator.find_connected_lines_in_across_all_patches(array_of_patches)
+        self.assertEqual(3, len(overall_clusters), 'We expect 2 cluster of lines, i.e. a cluster with prominent large line and a cluster with the shorter line. But, a third weak cluster might creep in')
 
-            self.assertGreaterEqual(slope_of_bigger_cluster,38,"The slope should be within expected range")
-            self.assertLessEqual(slope_of_bigger_cluster,42,"The slope should be within expected range")
+        bigger_cluster=None
+        smaller_cluster=None
+        if len(overall_clusters[0].ransac_lines[0].inliers) > len(overall_clusters[1].ransac_lines[0].inliers):
+            bigger_cluster=overall_clusters[0]
+            smaller_cluster=overall_clusters[1]
+        else:
+            bigger_cluster=overall_clusters[1]
+            smaller_cluster=overall_clusters[0]
 
-            self.assertGreaterEqual(slope_of_smaller_cluster,-14,"The slope should be within expected range")
-            self.assertLessEqual(slope_of_smaller_cluster,-10,"The slope should be within expected range")
+        slope_of_bigger_cluster=math.atan(-bigger_cluster.ransac_lines[0].line.A/bigger_cluster.ransac_lines[0].line.B) * 180/math.pi
+        slope_of_smaller_cluster=math.atan(-smaller_cluster.ransac_lines[0].line.A/smaller_cluster.ransac_lines[0].line.B) * 180/math.pi
+
+        self.assertGreaterEqual(slope_of_bigger_cluster,38,"The slope should be within expected range")
+        self.assertLessEqual(slope_of_bigger_cluster,42,"The slope should be within expected range")
+
+        self.assertGreaterEqual(slope_of_smaller_cluster,-14,"The slope should be within expected range")
+        self.assertLessEqual(slope_of_smaller_cluster,-10,"The slope should be within expected range")
 
 
     def  test_find_connected_lines_in_across_all_patches_3x3patches_and_1Cluster(self):
@@ -196,7 +198,7 @@ class Test_PatchByPatchLineAggregator(unittest.TestCase):
         array_of_patch_clusters[1][1]=[cluster_1_1]
         array_of_patch_clusters[2][2]=[cluster_2_2]
 
-        patch_aggregator=PatchByPatchLineAggregator(None)
+        patch_aggregator=PatchByPatchLineAggregator(None,200,200)
         list_of_connected_lines=patch_aggregator.find_connected_lines_in_across_all_patches(array_of_patch_clusters)
         self.assertEqual(1, len(list_of_connected_lines), '1 cluster should be returned')
         self.assertEqual(4, len(list_of_connected_lines[0].ransac_lines), 'The cluster should contain all the ransac lines')
@@ -243,7 +245,7 @@ class Test_PatchByPatchLineAggregator(unittest.TestCase):
         array_of_patch_clusters[2][2]=[cluster_2_2]
         array_of_patch_clusters[2][2]=[cluster_3_3]
 
-        patch_aggregator=PatchByPatchLineAggregator(None)
+        patch_aggregator=PatchByPatchLineAggregator(None,200,200)
         list_of_connected_lines=patch_aggregator.find_connected_lines_in_across_all_patches(array_of_patch_clusters)
         self.assertEqual(2, len(list_of_connected_lines), '2 cluster should be returned')
         self.assertEqual(2, len(list_of_connected_lines[0].ransac_lines), 'The cluster should contain all the ransac lines')

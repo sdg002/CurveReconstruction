@@ -4,6 +4,7 @@ from typing import Union, Any, List, Optional, cast
 from Common import Util
 import math
 import numpy as np
+import uuid
 
 class RansacLineInfo(object):
     """Represents all information of a single Line that has been determined via Ransac algo"""
@@ -16,6 +17,7 @@ class RansacLineInfo(object):
         self._inlier_distribution_index=-1
         self._bin_width=0
         self._projected_inliers2=None #Projecton of inlier points on the Ransac line
+        self.__id=int(hash(uuid.uuid4().hex))
 
     @property
     def line(self)->LineModel:
@@ -138,3 +140,6 @@ class RansacLineInfo(object):
     @bin_width.setter
     def bin_width(self, value):
         self._bin_width = value
+
+    def __hash__(self):
+        return hash(self.__id)

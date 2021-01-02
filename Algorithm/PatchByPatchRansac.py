@@ -20,7 +20,16 @@ class PatchByPatchRansac(object):
         self._image_width=float(0)
         self._image_height=float(0)
         self.ransac_threshold_distance=10 #distance from line for a point to be an inlier
-        self.__junk=111
+
+    @property
+    def image_width(self):
+        """The width of the image."""
+        return self._image_width
+
+    @property
+    def image_height(self):
+        """The height of the image."""
+        return self._image_height
 
     @property
     def Dimension(self)->int:
