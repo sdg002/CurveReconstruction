@@ -18,6 +18,14 @@ from matplotlib import colors
 def create_points_from_numpyimage(arr_image:np.ndarray):
     pass
     lst=list()
+    black_white_threshold=0
+    if (arr_image.dtype =="uint8"):
+        black_white_threshold=128
+    elif (arr_image.dtype == "float"):
+        black_white_threshold=0.5
+    else:
+        raise Exception("The image type is not supported: %s" % (arr_image.dtype))
+
     image_shape=arr_image.shape
     image_ht=image_shape[0]
     image_width=image_shape[1]
@@ -27,7 +35,7 @@ def create_points_from_numpyimage(arr_image:np.ndarray):
             #Change coordinate system
             color=arr_image[y][x]
             #we want black pixels only
-            if (color > 0.5):
+            if (color > black_white_threshold):
                 continue
 
             y_cartesian=image_ht - y -1
