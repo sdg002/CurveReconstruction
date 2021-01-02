@@ -6,6 +6,7 @@ from .LineModel import LineModel
 from .Point import Point
 from typing import Dict, List
 import random
+from matplotlib import colors
 
 
 #
@@ -61,6 +62,40 @@ def superimpose_points_on_image(arr_image_input:np.ndarray, points,red:int,green
         arr_new[y][x][1]=green
         arr_new[y][x][2]=blue
     return arr_new
+
+def superimpose_points_on_image2(arr_image_input:np.ndarray, sets_of_points:[],color_names:[]):
+    """
+    Takes a named color value. e.g. 'red', 'blue', 'green'
+    """
+    
+    width=arr_image_input.shape[1]
+    height=arr_image_input.shape[0]
+    arr_new=np.zeros([height,width,3])
+    #We want to capture the original image
+    for x in range(0,width):
+        for y in range(0,height):
+            color=arr_image_input[y][x]
+            if (color > 0.5):
+                arr_new[y][x][0]=255
+                arr_new[y][x][1]=255
+                arr_new[y][x][2]=255
+    #superimpose the points onto the numpy array
+    for i in range(0,len(sets_of_points)):
+        color=color_names[i%len(color_names)]   
+        red,green,blue=colors.to_rgb(color)
+        for p in sets_of_points[i]:
+            x:int=int(round(p.X))
+            y:int=int(round(height-p.Y-1))
+            if (x<0 or x >= width ):
+                continue
+            if (y<0 or y >= height ):
+                continue
+            arr_new[y][x][0]=red*255
+            arr_new[y][x][1]=green*255
+            arr_new[y][x][2]=blue*255
+    return arr_new
+
+
 
 #
 #The expected input image is a monochrome image

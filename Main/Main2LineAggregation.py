@@ -32,7 +32,6 @@ def run(inputfilename:str,patchdimension:int):
     patch_algo.Dimension=patchdimension
     patch_algo.ransac_threshold_distance=2
     arr_patches=patch_algo.run1()
-    #patch_results:List[RansacPatchInfo]=arr_patches.flatten()
 
 
     filter_handler=PatchByPatchStatisticalFilter(arr_patches)
@@ -57,32 +56,7 @@ def run(inputfilename:str,patchdimension:int):
     print("Complete")    
     print("----------------------------")
 
-# def aggregate_lines_and_overlay(filename:str,arr_patches:np.ndarray,distribution_threshold:float):
-#     np_input_image=io.imread(filename,as_gray=True)
-#     agg=PatchByPatchLineAggregator(arr_patches)
-#     connected_lines:List[ConnectedLines]=agg.run()
-#     connected_line:ConnectedLines
-#     for connected_line in connected_lines:
-#         lines=connected_line.ransac_lines
-#         all_projections:List[Point]=list()
-#         for ransac_line in lines:
-#             projected_inliers=ransac_line.projected_inliers
-#             all_projections.extend(projected_inliers)
-#         np_input_image=Util.superimpose_points_on_image(np_input_image,all_projections,100,255,100)  #rotate the colors to help distinguish the clusters
-#     pass
 
-# def flatten_all_ransac_lines_from_patches(patches:List[RansacPatchInfo])->List[RansacLineInfo]:
-#     results=[]
-#     for patch_result in patches:
-#         print("\tpatch %s" % (patch_result))
-#         for ransac_line in patch_result.ransacinfo:
-#             print("\t\tline %s density:%f length:%f  distribution_index:%f" % (ransac_line, ransac_line.density, ransac_line.length, ransac_line.inlier_distribution_index))
-#             results.append(ransac_line)
-#     return results
-
-# def compute_median_distribution_coefficient(ransac_lines:List[RansacLineInfo])->float:
-#     all_coefficients=list(map(lambda  l: l.inlier_distribution_index, ransac_lines))
-#     return statistics.median(all_coefficients)
 
 def overlay_lines_on_original_image(filename:str,clusters:[]):
     """ This function will render lines which have a distribution coefficient value above the specified threshold """

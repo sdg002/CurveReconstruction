@@ -23,7 +23,19 @@ class PatchByPatchLineAggregator():
     
     @property
     def epsilon(self):
-        """The epsilon property."""
+        """ The epsilon property used for DBSCAN.
+            Attention! Not right to take just normalize the 'rho_threshold' OR 'theta_threshold' directly , 
+            You will need to take the difference between normalized values some_rho and (some_rho+rho_threshold), 
+            The value of 'some_rho' can be anything suitable in the range of existing values. e.g. 0
+        """
+        if (self._epsilon != 0):
+            return self._epsilon
+        scaler=self.min_max_scaler
+        normalized_zero_zero=scaler.transform([[0,0]])
+        normalized_thresholds=scaler.transform([[self.rho_threshold,self.theta_threshold]])
+        delta_rho_threshold=normalized_thresholds[0][0]-normalized_zero_zero[0][0]
+        delta_theta_threshold=normalized_thresholds[0][1]-normalized_zero_zero[0][1]
+        self._epsilon=math.sqrt(delta_rho_threshold**2 + delta_theta_threshold**2)
         return self._epsilon
 
     @property
@@ -119,15 +131,8 @@ class PatchByPatchLineAggregator():
         
         scaler:MinMaxScaler = self.min_max_scaler
         normalized_rho_theta=scaler.transform(list_rho_theta)
-        #you want to calculate a value of epsilon,
-        #Attention! Not right to take just normalize the 'rho_threshold' , You will need to take the difference between normalized values some_rho and (some_rho+rho_threshold), 
-        #The value of 'some_rho' can be anything suitable in the range
-        normalized_zero_zero=scaler.transform([[0,0]])
-        normalized_thresholds=scaler.transform([[self.rho_threshold,self.theta_threshold]])
-        delta_rho_threshold=normalized_thresholds[0][0]-normalized_zero_zero[0][0]
-        delta_theta_threshold=normalized_thresholds[0][1]-normalized_zero_zero[0][1]
-        epsilon=math.sqrt(delta_rho_threshold**2 + delta_theta_threshold**2)
 
+        epsilon=self.epsilon
         db=DBSCAN(eps=epsilon, min_samples=2)
         db.fit(normalized_rho_theta)
         labels = db.labels_ #An array which is the same length as data vectors array. Each item in the array 
