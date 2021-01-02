@@ -57,8 +57,28 @@ def run(inputfilename:str,patchdimension:int):
     print("----------------------------")
 
 
-
 def overlay_lines_on_original_image(filename:str,clusters:[]):
+    colors=["blue","green", "orange"]
+    np_input_image=io.imread(filename,as_gray=True)
+    list_of_cluster_points=[]
+    for cluster in clusters:
+        cluster_points=[]
+        for ransac_line in cluster.ransac_lines:
+            projected_inliers=ransac_line.projected_inliers
+            cluster_points.extend(projected_inliers)
+        list_of_cluster_points.append(cluster_points)
+    np_superimposed_patches=Util.superimpose_points_on_image2(np_input_image,list_of_cluster_points,colors)
+
+    folder_script=os.path.dirname(__file__)
+    now=datetime.datetime.now()    
+    filename_result=("%s-%s.png") % (os.path.basename(filename)[0:5],now.strftime("%Y-%m-%d-%H-%M-%S"))
+    file_result=os.path.join(folder_script,"./out/",filename_result)
+    io.imsave(file_result,np_superimposed_patches)
+    print("Results saved to file:%s" % (file_result))
+    print("Count of clusters=%d" % (len(clusters)))
+
+        
+def overlay_lines_on_original_image_0(filename:str,clusters:[]):
     """ This function will render lines which have a distribution coefficient value above the specified threshold """
     np_input_image=io.imread(filename,as_gray=True)
 
@@ -73,6 +93,7 @@ def overlay_lines_on_original_image(filename:str,clusters:[]):
             #you were here, you got 2 clusters with sine curve
             #Why two? Why so much noise? Plot every cluster with different color?
             #rotate the colors  colors.to_rgba("red")
+
 
     np_superimposed_patches=Util.superimpose_points_on_image(np_input_image,all_projections,100,255,100)
 
