@@ -83,6 +83,6 @@ def overlay_results(inputfilename:str,ransac_patches:List[RansacPatchInfo]):
 
 #run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=50)
 #run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
-run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=200)
+#run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=200)
 #run("Cubic-W=500.H=200.MAXD=15.SP=0.90.3.png.3.png", patchdimension=50)
 

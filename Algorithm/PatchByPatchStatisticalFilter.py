@@ -37,6 +37,8 @@ class PatchByPatchStatisticalFilter():
         However, the array members are just list of RansacLineInfo instances which meet the criteria
         """
         all_coefficients=list(map(lambda  l: l.inlier_distribution_index, self.flattened_ransac_lines))
+        if (len(all_coefficients)==0):
+            return 0
         median=statistics.median(all_coefficients)
 
         y_max=self.__array_of_patches.shape[0]
