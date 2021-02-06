@@ -31,6 +31,8 @@ class GenericCurveGenerator(object):
             self.__curvetype=value
         elif (value == "cosine"):
             self.__curvetype=value
+        elif (value == "parabola"):
+            self.__curvetype=value
         else:
             raise Exception("This curve type is not implemented")
         
@@ -136,6 +138,11 @@ class GenericCurveGenerator(object):
         y=(x-width/2)**3
         return y/100000
 
+    def __ParabolaFunction(self,x, width,height):
+        y=0.1*(x-width/2)**2 - height/2.0
+        return y
+
+
     def __InvokeAnyFunction(self,x,width,height):
         if (self.__curvetype == "sine"):
             return self.__SineFunction(x,width,height)
@@ -143,8 +150,10 @@ class GenericCurveGenerator(object):
             return self.__CosineFunction(x,width,height)
         elif (self.__curvetype == "cubic"):
             return self.__CubeFunction(x,width,height)
+        elif (self.__curvetype == "parabola"):
+            return self.__ParabolaFunction(x,width,height)
         else:
-            raise Exception("This curve type is not implemented")
+            raise Exception("This curve type is not implemented: %s" % (self.__curvetype))
 
     def generate_curve(self):
         blank_image=self.__generate_blankimage_with_saltpepper_noise()
@@ -158,7 +167,7 @@ class GenericCurveGenerator(object):
     #
     def generate_filename_prefix(self):
         sp_ratio=round(self.saltpepper,2)
-        filename="W=%d.H=%d.MAXD=%d.SP=%.2f"%(self.width,self.height,self.max_consecutive_distance,sp_ratio)
+        filename="%s.W=%d.H=%d.MAXD=%d.SP=%.2f"%(self.__curvetype,self.width,self.height,self.max_consecutive_distance,sp_ratio)
         return filename
 
     def __save_image_to_disk(self,image_array,filename):

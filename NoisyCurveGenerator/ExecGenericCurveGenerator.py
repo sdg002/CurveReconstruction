@@ -36,7 +36,7 @@ def generate_sine():
     generator.curvetype="sine"
     generator.max_consecutive_distance=20
     prefix=generator.generate_filename_prefix()
-    generator.output_file=create_new_absolute_filename("Sine-"+prefix)
+    generator.output_file=create_new_absolute_filename(prefix)
     generator.generate_curve()
     pass
 
@@ -46,7 +46,7 @@ def generate_cosine():
     generator.curvetype="cosine"
     generator.max_consecutive_distance=20
     prefix=generator.generate_filename_prefix()
-    generator.output_file=create_new_absolute_filename("Cosine-"+prefix)
+    generator.output_file=create_new_absolute_filename(prefix)
     generator.generate_curve()
     pass
 
@@ -56,10 +56,20 @@ def generate_cubic():
     generator.curvetype="cubic"
     generator.max_consecutive_distance=15
     prefix=generator.generate_filename_prefix()
-    generator.output_file=create_new_absolute_filename("Cubic-"+prefix)
+    generator.output_file=create_new_absolute_filename(prefix)
+    generator.generate_curve()
+
+def generate_parabola():
+    generator=GenericCurveGenerator(width=img_width,height=img_height)
+    generator.saltpepper=0.80
+    generator.curvetype="parabola"
+    generator.max_consecutive_distance=10
+    prefix=generator.generate_filename_prefix()
+    generator.output_file=create_new_absolute_filename(prefix)
     generator.generate_curve()
 
 #generate_cubic()
 #generate_sine()
 generate_cosine()
+#generate_parabola()
 pass
