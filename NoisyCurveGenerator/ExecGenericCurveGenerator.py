@@ -77,7 +77,17 @@ def generate_spiral():
     generator.output_file=create_new_absolute_filename(prefix)
     generator.generate_curve()
 
-generate_spiral()
+def generate_circle():
+    generator=GenericCurveGenerator(width=img_width,height=img_height)
+    generator.saltpepper=0.80
+    generator.curvetype="circle"
+    generator.max_consecutive_distance=15
+    prefix=generator.generate_filename_prefix()
+    generator.output_file=create_new_absolute_filename(prefix)
+    generator.generate_curve()
+
+generate_circle()
+#generate_spiral()
 #generate_cubic()
 #generate_sine()
 #generate_cosine()

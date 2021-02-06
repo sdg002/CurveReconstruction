@@ -35,6 +35,8 @@ class GenericCurveGenerator(object):
             self.__curvetype=value
         elif (value == "spiral"):
             self.__curvetype=value
+        elif (value == "circle"):
+            self.__curvetype=value
         else:
             raise Exception("This curve type is not implemented:%s" % (value))
         
@@ -122,8 +124,54 @@ class GenericCurveGenerator(object):
         return image_result
         pass
 
+    def __generate_circle(self,image_array):
+        max_distance=self._max_distance_consecutive_points
+        min_distance=max_distance/2
+        width=image_array.shape[1]
+        height=image_array.shape[0]
 
-    def __generate_xy_from_polar_function(self,image_array):
+        theta=0
+        delta_theta=0.1
+        origin_x=width/2
+        origin_y=height/2
+
+        radius=width/10
+        pts_new=list();
+        
+        x_last=origin_x
+        y_last=origin_y
+
+        while (True):
+            x=radius*math.cos(theta)
+            y=radius*math.sin(theta)
+            x_new=x+origin_x
+            y_new=y+origin_y
+            if (x_new > width):
+                break
+            if (y_new > height):
+                break
+            if (theta > 2 * math.pi):
+                break
+
+            distance_from_lastpoint= ((x_new-x_last)**2 + (y_new-y_last)**2)**0.5
+            if  (len(pts_new)==0) or ((distance_from_lastpoint < max_distance) and (distance_from_lastpoint >= min_distance)):
+                pt_new=Point(x_new,y_new)
+                pts_new.append(pt_new)
+                x_last=x_new
+                y_last=y_new
+                theta=theta+ delta_theta
+            elif (distance_from_lastpoint < min_distance):
+                delta_theta=delta_theta*1.1
+                theta=theta+ delta_theta
+            else:
+                delta_theta= delta_theta*0.9
+                theta=theta - delta_theta
+            
+        image_result=Util.superimpose_points_on_image(image_array,pts_new, 0,0,0)
+        return image_result
+
+
+    def __generate_spiral(self,image_array):
         max_distance=self._max_distance_consecutive_points
         min_distance=max_distance/2
         width=image_array.shape[1]
@@ -169,7 +217,6 @@ class GenericCurveGenerator(object):
         image_result=Util.superimpose_points_on_image(image_array,pts_new, 0,0,0)
         return image_result
 
-
     def __SineFunction(self,x, width,height):
         amplitude=height*0.5*0.9
         radians_to_pix=math.pi/2 / (height*0.25)
@@ -209,11 +256,12 @@ class GenericCurveGenerator(object):
         blank_image=self.__generate_blankimage_with_saltpepper_noise()
         new_image=None
         if (self.__curvetype == "spiral"):
-            new_image= self.__generate_xy_from_polar_function(blank_image)
+            new_image= self.__generate_spiral(blank_image)
+        elif (self.__curvetype == "circle"):
+            new_image= self.__generate_circle(blank_image)
         else:
-            new_image=self.__generate_xy_from_custom_function(blank_image)
+            raise Exception("This curve type is not implemented: %s" % (self.__curvetype))
         self.__save_image_to_disk(new_image,self.output_file)
-        pass
 
     #
     #Generates a filename derived from the properties of the class
