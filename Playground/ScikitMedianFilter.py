@@ -17,10 +17,13 @@ def median_filter(inputfilename):
     print(original.max())
     print(original.min())
     
-    median_filtered=median(original, disk(50))  #5, 10, 20,100
+    median_filtered=median(original, disk(2))  #`, 5, 10, 20,100
 
     filename_result="median-filter-output.png"
     file_result=os.path.join(folder_script,"./out/",filename_result)
     io.imsave(file_result,median_filtered)
 
-median_filter(inputfilename="Sine-50-percent.png")
+#median_filter(inputfilename="Sine-50-percent.png")
+median_filter(inputfilename="Sine-50-percent - MoreBlack.png")
+
+#

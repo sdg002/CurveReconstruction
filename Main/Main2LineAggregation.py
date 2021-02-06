@@ -108,7 +108,7 @@ def overlay_lines_on_original_image_0(filename:str,clusters:[]):
     pass
 
 
-#run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
+run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
 """
 sine curve
     patchdimension=50, 30+ clusters, too many independent lines
@@ -116,14 +116,14 @@ sine curve
 """
 
 
-#run("Cosine-W=500.H=200.MAXD=20.SP=0.95.9.png", patchdimension=100)
+run("Cosine-W=500.H=200.MAXD=20.SP=0.95.9.png", patchdimension=100)
 """
 cosine curve
     patchdimension=50, 50 clusters, too many noisy lines detected, full curve also detected
     patchdimension=150, 5 clusters, looks very good, no noise, full curve was detected
 """
 # run("Large.SampleWith1ProminentLine.png", patchdimension=100)
-# run("Cubic-W=500.H=200.MAXD=15.SP=0.90.8.png.8.png", patchdimension=100)
+run("Cubic-W=500.H=200.MAXD=15.SP=0.90.8.png.8.png", patchdimension=100)
 
 #run("Sine-50-percent.png", patchdimension=25) #too many lines, but the actual lines are also present
 #run("Sine-50-percent.png", patchdimension=40) #better than 25
