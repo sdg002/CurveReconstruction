@@ -5,7 +5,7 @@ we have a picture with a smooth curve (circle, parabola) and dotted with salt pe
 
 
 ## Next steps
-- Create a spiral curve
+- Try reducing the since wave and extract patches
 - Create a star shape
 - Create a circle
 - Create a HTML result from independent picture output and another accompanying output JSON which contains the parameters used for the generator
