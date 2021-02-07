@@ -6,6 +6,7 @@
 import numpy as np
 import os
 import skimage
+import skimage.io
 import Util
 import random
 from common.Point import Point
@@ -18,15 +19,15 @@ import GenGaussianNoise as gaussianxy
 #
 
 img_back_color=255
-img_width=100
-img_height=50
+img_width=300
+img_height=400
 num_points=30
 img = np.zeros([img_height,img_width,1],dtype=np.uint8)
 img.fill(img_back_color)
 #
 #Generate Salt-Pepper noise
 #
-salt_pepper_ratio=0.01
+salt_pepper_ratio=0.8
 #0.2
 #0.01
 image_noisy=skimage.util.random_noise(img,mode="s&p",seed=None, clip=True,salt_vs_pepper=salt_pepper_ratio)

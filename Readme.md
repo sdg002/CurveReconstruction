@@ -7,7 +7,6 @@ we have a picture with a smooth curve (circle, parabola) and dotted with salt pe
 ## Next steps
 - Try reducing the since wave and extract patches
 - Create a star shape
-- Create a circle
 - Create a HTML result from independent picture output and another accompanying output JSON which contains the parameters used for the generator
 
 ## Changes to algo
@@ -18,3 +17,6 @@ we have a picture with a smooth curve (circle, parabola) and dotted with salt pe
 - 
 
 
+
+# References
+- Dataset used for CONSAC paper https://github.com/trungtpham/RCMSA/tree/master/data/AdelaideRMF
