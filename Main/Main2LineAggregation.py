@@ -14,6 +14,9 @@ from Algorithm import PatchByPatchLineAggregator
 from Common import ConnectedLines
 from Algorithm import PatchByPatchStatisticalFilter
 import math
+from os import listdir
+from os.path import join
+
 #
 #In this script, 
 #   Step 1 - the median value of the distribution coefficient is first calculated and only lines which are above this value are selected
@@ -22,7 +25,9 @@ import math
 
 
 def run(inputfilename:str,patchdimension:int):
-    print("Start")    
+    print("Start")
+    print("----------------------------")
+    print(inputfilename)
     print("----------------------------")
 
     folder_script=os.path.dirname(__file__)
@@ -71,7 +76,8 @@ def overlay_lines_on_original_image(filename:str,clusters:[]):
 
     folder_script=os.path.dirname(__file__)
     now=datetime.datetime.now()    
-    filename_result=("%s-%s.png") % (os.path.basename(filename)[0:5],now.strftime("%Y-%m-%d-%H-%M-%S"))
+    #filename_result=("%s-%s.png") % (os.path.basename(filename),now.strftime("%Y-%m-%d-%H-%M-%S"))
+    filename_result=("%s-%s.png") % (os.path.basename(filename),"result")
     file_result=os.path.join(folder_script,"./out/",filename_result)
     io.imsave(file_result,np_superimposed_patches)
     print("Results saved to file:%s" % (file_result))
@@ -107,8 +113,21 @@ def overlay_lines_on_original_image_0(filename:str,clusters:[]):
     print("Count of ransac lines skipped=%d" % (count_of_lines_skipped))
     pass
 
+def run_all_files_in_folder(folder:str):
+    files=listdir(folder)
+    count=0
+    for file in files:
+        extension=os.path.splitext(files[0])[1]
+        if (extension.lower() != '.png'):
+            continue
+        absolutepath=join(folder,file)
+        run(absolutepath,patchdimension=50)
+        count+=1
+    print("Resized %d files" % (count))
+    pass
 
-run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
+
+#run("Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png", patchdimension=100)
 """
 sine curve
     patchdimension=50, 30+ clusters, too many independent lines
@@ -116,16 +135,18 @@ sine curve
 """
 
 
-run("Cosine-W=500.H=200.MAXD=20.SP=0.95.9.png", patchdimension=100)
+#run("Cosine-W=500.H=200.MAXD=20.SP=0.95.9.png", patchdimension=100)
 """
 cosine curve
     patchdimension=50, 50 clusters, too many noisy lines detected, full curve also detected
     patchdimension=150, 5 clusters, looks very good, no noise, full curve was detected
 """
 # run("Large.SampleWith1ProminentLine.png", patchdimension=100)
-run("Cubic-W=500.H=200.MAXD=15.SP=0.90.8.png.8.png", patchdimension=100)
+#run("Cubic-W=500.H=200.MAXD=15.SP=0.90.8.png.8.png", patchdimension=100)
 
 #run("Sine-50-percent.png", patchdimension=25) #too many lines, but the actual lines are also present
 #run("Sine-50-percent.png", patchdimension=40) #better than 25
 #run("Sine-50-percent.png", patchdimension=50) #gives far better results than 25 and 40
 #run("Sine-50-percent.png", patchdimension=100) #No clusters were identified
+
+run_all_files_in_folder("C:/Users/saurabhd/MyTrials/MachineLearnings-2/CurveReconstruction/Main/in/parabola")

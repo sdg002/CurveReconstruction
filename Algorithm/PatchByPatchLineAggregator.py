@@ -122,6 +122,8 @@ class PatchByPatchLineAggregator():
         all_ransac_lines.extend(patch_top_right)
         all_ransac_lines.extend(patch_bot_left)
         all_ransac_lines.extend(patch_bot_right)
+        if (len(all_ransac_lines) == 0):
+            return []
 
         all_standard_lines=list(map(lambda  ransac: ransac.line,all_ransac_lines))
         all_polar_lines=list(map(lambda line: PolarLineModel.generate_polar_equation_hough(line),all_standard_lines))

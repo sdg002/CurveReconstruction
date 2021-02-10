@@ -8,6 +8,7 @@ we have a picture with a smooth curve (circle, parabola) and dotted with salt pe
 - Try reducing the since wave and extract patches
 - Create a star shape
 - Create a HTML result from independent picture output and another accompanying output JSON which contains the parameters used for the generator
+- - How do you read Matlab .MAT file (see read me)
 
 ## Changes to algo
 - Capture patch window size, 
