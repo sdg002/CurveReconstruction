@@ -24,7 +24,7 @@ from os.path import join
 #
 
 
-def run(inputfilename:str,patchdimension:int):
+def process_single_file(inputfilename:str,patchdimension:int):
     print("Start")
     print("----------------------------")
     print(inputfilename)
@@ -113,7 +113,7 @@ def overlay_lines_on_original_image_0(filename:str,clusters:[]):
     print("Count of ransac lines skipped=%d" % (count_of_lines_skipped))
     pass
 
-def run_all_files_in_folder(folder:str):
+def process_all_files_in_folder(folder:str,patchdimension:int):
     files=listdir(folder)
     count=0
     for file in files:
@@ -121,7 +121,7 @@ def run_all_files_in_folder(folder:str):
         if (extension.lower() != '.png'):
             continue
         absolutepath=join(folder,file)
-        run(absolutepath,patchdimension=50)
+        process_single_file(absolutepath,patchdimension=patchdimension)
         count+=1
     print("Resized %d files" % (count))
     pass
@@ -149,4 +149,4 @@ cosine curve
 #run("Sine-50-percent.png", patchdimension=50) #gives far better results than 25 and 40
 #run("Sine-50-percent.png", patchdimension=100) #No clusters were identified
 
-run_all_files_in_folder("C:/Users/saurabhd/MyTrials/MachineLearnings-2/CurveReconstruction/Main/in/parabola")
+process_all_files_in_folder("C:/Users/saurabhd/MyTrials/MachineLearnings-2/CurveReconstruction/Main/in/circle",patchdimension=50)

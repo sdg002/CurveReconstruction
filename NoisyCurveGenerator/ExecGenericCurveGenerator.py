@@ -32,7 +32,7 @@ def create_new_absolute_filename(prefix):
 
 def generate_sine():
     generator=GenericCurveGenerator(width=img_width,height=img_height)
-    generator.saltpepper=0.95
+    generator.saltpepper=0.90
     generator.curvetype="sine"
     generator.max_consecutive_distance=20
     prefix=generator.generate_filename_prefix()
@@ -86,7 +86,17 @@ def generate_circle():
     generator.output_file=create_new_absolute_filename(prefix)
     generator.generate_curve()
 
-generate_circle()
+def generate_diagonallines():
+    generator=GenericCurveGenerator(width=img_width,height=img_height)
+    generator.saltpepper=0.90
+    generator.curvetype="diagonallines"
+    generator.max_consecutive_distance=15
+    prefix=generator.generate_filename_prefix()
+    generator.output_file=create_new_absolute_filename(prefix)
+    generator.generate_curve()
+
+
+generate_diagonallines()
 #generate_spiral()
 #generate_cubic()
 #generate_sine()

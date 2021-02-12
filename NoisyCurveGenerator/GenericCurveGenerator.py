@@ -37,6 +37,8 @@ class GenericCurveGenerator(object):
             self.__curvetype=value
         elif (value == "circle"):
             self.__curvetype=value
+        elif (value == "diagonallines"):
+            self.__curvetype=value
         else:
             raise Exception("This curve type is not implemented:%s" % (value))
         
@@ -123,6 +125,43 @@ class GenericCurveGenerator(object):
         image_result=Util.superimpose_points_on_image(image_array,pts_new, 0,0,0)
         return image_result
         pass
+
+    def __generate_points_along_p1p2(self,pointA:Point, pointB:Point, gap:float):
+        magnitude= math.sqrt( (pointA.X-pointB.X)**2+(pointA.Y-pointB.Y)**2)        
+        unit_vector=Point((pointB.X-pointA.X)/magnitude,(pointB.Y-pointA.Y)/magnitude)
+        t=0
+        results=[]
+        mean_gap=self.max_consecutive_distance
+        std_gap=mean_gap/5
+        while ( t < magnitude):
+            dynamic_gap=np.random.normal(mean_gap,std_gap)
+            new_point=Point(pointA.X+ t*unit_vector.X, pointA.Y+t*unit_vector.Y)
+            results.append(new_point)
+            t+=dynamic_gap
+            print("dynamic gap=%f" % (dynamic_gap))
+        return results
+    
+    def __generate_diagonallines(self,image_array):
+        #
+        #You were here
+        #
+        #
+        width=image_array.shape[1]
+        height=image_array.shape[0]
+        all_points=[]
+
+        pointA:Point = Point(0, np.random.rand() * height*1/2)
+        pointB:Point = Point(width,height*1/2 * (1+np.random.rand()))
+        points_AB=self.__generate_points_along_p1p2(pointA,pointB,self._max_distance_consecutive_points)
+        all_points.extend(points_AB)
+
+        pointC:Point = Point(0,  height*1/2*(1+np.random.rand()))
+        pointD:Point = Point(width,height*1/2*np.random.rand())
+        points_CD=self.__generate_points_along_p1p2(pointC,pointD,self._max_distance_consecutive_points)
+        all_points.extend(points_CD)
+
+        image_result=Util.superimpose_points_on_image(image_array,all_points, 0,0,0)
+        return image_result
 
     def __generate_circle(self,image_array):
         max_distance=self._max_distance_consecutive_points
@@ -259,8 +298,10 @@ class GenericCurveGenerator(object):
             new_image= self.__generate_spiral(blank_image)
         elif (self.__curvetype == "circle"):
             new_image= self.__generate_circle(blank_image)
+        elif (self.__curvetype == "diagonallines"):
+            new_image= self.__generate_diagonallines(blank_image)
         else:
-            raise Exception("This curve type is not implemented: %s" % (self.__curvetype))
+            new_image=self.__generate_xy_from_custom_function(blank_image)
         self.__save_image_to_disk(new_image,self.output_file)
 
     #
