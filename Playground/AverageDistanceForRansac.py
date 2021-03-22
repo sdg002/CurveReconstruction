@@ -22,7 +22,7 @@ def generate_noisy_image(width:int, salt_pepper:float):
     return img
 
 
-def calculate_distance_statistics(image:np.ndarray):
+def compute_mutual_distances(image:np.ndarray):
     all_black_indices=np.where(image < 1)
     x_values=all_black_indices[1]
     y_values=all_black_indices[0]
@@ -36,7 +36,7 @@ def calculate_distance_statistics(image:np.ndarray):
             y2=y_values[j]
             distance= math.sqrt( (x2-x1)**2 + (y2-y1)**2 )
             distances.append(distance)
-    return statistics.mean(distances), statistics.median(distances)
+    return distances
 
 def find_ransac_model(image:np.ndarray, threshold:float):
     return None
@@ -64,7 +64,10 @@ save_image(image=noisy_image,filename=new_filename)
 #Compute average distance
 #
 print("Computing average distance between the points")
-average_distance,median_distance=calculate_distance_statistics(noisy_image)
+distances=compute_mutual_distances(image=noisy_image)
+print("Calculated %d distances" % (len(distances)))
+average_distance=statistics.mean(distances)
+median_distance=statistics.median(distances)
 print("Average distance=%f, Median distance=%f" % (average_distance,median_distance))
 
 #You have reached here. The mean and median is about 50.0

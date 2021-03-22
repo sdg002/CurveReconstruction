@@ -4,9 +4,9 @@
 we have a picture with a smooth curve (circle, parabola) and dotted with salt pepper noise. We want to remove the noise and just get to the smooth curve.
 
 ## What was I thinking?
+- Test the diagonal lines 
 - Use sequential RANSAC and find all lines in small patches
 - Eliminate all other points  -just keep the points in the vicnity of these small lines
-- Test using 2 intersecting lines
 - Good to have 1 more sample of intersecting curves. e.g. 2 circles side by side or 2 parabolas in a top-down manner
 
 
