@@ -71,6 +71,16 @@ median_distance=statistics.median(distances)
 print("Average distance=%f, Median distance=%f" % (average_distance,median_distance))
 
 #You have reached here. The mean and median is about 50.0
+# Plot a histogram of the distances and find the distribution
+# Also find the closest point for every point
+# Look at Kdtree https://scipy-cookbook.readthedocs.io/items/KDTree_example.html
+# The salt-pepper does not work as I thought - you may have to roll your own algorithm
+
+#You were here
+#Decinde on the fraction of pepper points
+#Generat an image with approximately these many pepper points (see SaltPepperNoise.py)
+#
+#
 exit()
 #
 #Generate RANSAC mdoel
