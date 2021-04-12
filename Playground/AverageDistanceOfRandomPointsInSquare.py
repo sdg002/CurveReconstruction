@@ -45,8 +45,9 @@ def plot(points_count:List,  means:List):
 
 lst_pointcount=[]
 lst_meandistance=[]
+iterations=50
 for point_count in range(2,1000):
-    nn=NearestNeighbourDistance(squaresize=1,point_count=point_count,iterations=10)
+    nn=NearestNeighbourDistance(squaresize=1,point_count=point_count,iterations=iterations)
     mean_distance=nn.compute_mean()
     lst_pointcount.append(point_count)
     lst_meandistance.append(mean_distance)
