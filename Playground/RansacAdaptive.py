@@ -16,6 +16,16 @@ what did I learn from Parabola?
 What did not work well?
 -----------------------
     But, for the most crowded parabola, I could not get the best line even after 24,00,000 iterations
+    What could be happening? 
+    ------------------------
+        The inliners and outliers is evenly spaced
+        RANSAC gave you a line with larger inlier count and hence the valid lines lost
+    What could be done? 
+    -------------------
+        Try reducing the threshold distance. Tried with 0.5 and 1.0 of median.
+        At 1.0 median, I failed to detect the best line in 2 of the over crowded images
+        Also tried (median-stdev), this was the same as 0.5*median
+        At 0.25 median, I was able to get the best results. Just 1 file produced the wrong line
 
 '''
 from operator import mod
@@ -52,14 +62,18 @@ def run(inputfilename:str,num_trials:int=1000):
     mean=statistics.mean(nne_distances)
     #mode=statistics.mode(nne_distances)
     mode=stats.mode(nne_distances)[0]
+    median=statistics.median(nne_distances)
     stdev=statistics.stdev(nne_distances)
     print("Count of points=%d" % (len(points_array)))
-    print("Mean=%f, Mode=%f, Stddev=%f" % (mean,mode, stdev))
+    #distance_from_line=median *1.0 #2 of the files didnot give correct output
+    #distance_from_line=median -stdev #2 of the files didnot give correct output
+    distance_from_line=median*0.25
+    print("Mean=%f, Mode=%f, Median=%f, Stddev=%f ransca_threshold=%f" % (mean,mode, median,stdev,distance_from_line))
     #
     #Now do the RANSAC
     #
     #I tried mode-stdev, but this produced near zero threshold for LineSample2.png
-    distance_from_line=mode *.5
+    #distance_from_line=mode *.5
     min_samples=3
     model_robust, inliers = ransac(points_array, LineModelND, min_samples=min_samples,
                                    residual_threshold=distance_from_line, max_trials=num_trials)
@@ -104,8 +118,8 @@ def run_selected_filepattern(pattern:str,num_trials:int):
         filename=os.path.basename(file)
         run(filename,num_trials=num_trials)
 #run_selectedfiles()
-#run_selected_filepattern("*parabola*.png")
-run_selected_filepattern("*parabola.W=500.H=200.MAXD=10.SP=0.80.21.png*",num_trials=2400000)
+run_selected_filepattern("*parabola*.png",num_trials=5000)
+#run_selected_filepattern("*parabola.W=500.H=200.MAXD=10.SP=0.80.21.png*",num_trials=2400000)
 #parabola.W=500.H=200.MAXD=10.SP=0.80.21.png.21-threshold-1-minsamples-3-inliers-1093.result
 #parabola.W=500.H=200.MAXD=10.SP=0.80.21.png.21-threshold-1-minsamples-3-inliers-1093.result
 
