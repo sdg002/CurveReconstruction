@@ -43,7 +43,7 @@ def read_black_pixels(imagefilename:str):
     np_data_points=np.column_stack((indices[1],cartesian_y)) 
     return np_data_points, width,height
 
-def extract_first_ransac_line(data_points:[], max_distance:int):
+def extract_first_ransac_line(data_points:List, max_distance:int):
     """
     Inputs:
         Accepts a numpy array with shape N,2  N points, with coordinates x=[0],y=[1]
@@ -54,7 +54,7 @@ def extract_first_ransac_line(data_points:[], max_distance:int):
          The model line
     """
     
-    print("Doing RANSAC to get single line on image with %d points and RANSAC threshold=%f" % (data_points.shape[0],max_distance))
+    print("Doing RANSAC to get single line on image with %d points and RANSAC threshold=%f and min_samples=%d" % (data_points.shape[0],max_distance,min_samples))
     model_robust, inliers = ransac(data_points, LineModelND, min_samples=min_samples,
                                    residual_threshold=max_distance, max_trials=1000)
     results_inliers=[]
@@ -121,36 +121,38 @@ def superimpose_all_inliers(ransac_lines,width:float, height:float):
             new_image[new_y][x][2]=color[2]
     return new_image
 
-def extract_multiple_lines_and_save(inputfile:str,iterations:int, min_inliers_allowed:int):
+def extract_multiple_lines_and_save(inputfile:str,iterations:int, min_inliers_allowed:int, threshold_factor:float):
     """
     min_inliers_allowed - a line is selected only if it has more than this inliers. The search process is halted when this condition is met
     """
-    print("---------------------------------------")
     inputfilename=os.path.basename(inputfile)
-    print("Processing: %s" % (inputfilename))
+    print("-----------------Processing: %s , with min_inliers_allowed=%f, threshold_factor=%f" % (inputfilename,min_inliers_allowed,threshold_factor))
     folder_script=os.path.dirname(__file__)
 
     results:List[RansacLineInfo]=[]
     all_black_points,width,height=read_black_pixels(inputfile)
     print("Found %d pixels in the file %s" % (len(all_black_points),inputfilename))
-    ransac_threshold=calculate_ransac_threshold_from_nearest_neighbour_estimate(all_black_points)
     starting_points=all_black_points
     for index in range(0,iterations):
-        if (len(starting_points) <= min_samples):
-            print("No more points available. Terminating search for RANSAC")
+        ransac_threshold=calculate_ransac_threshold_from_nearest_neighbour_estimate(starting_points) *threshold_factor
+        min_needed_points=min_samples*2
+        if (len(starting_points) <= min_samples*2):
+            print("No more points available. Terminating search for RANSAC. Available points=%d Cutt off points count=%d" % (len(starting_points),min_needed_points))
             break
         inlier_points,inliers_removed_from_starting,model=extract_first_ransac_line(starting_points,max_distance=ransac_threshold)
         if (len(inlier_points) < min_inliers_allowed):
             print("Not sufficeint inliers found %d , threshold=%d, therefore halting" % (len(inlier_points),min_inliers_allowed))
             break
+        print("Found RANSAC line with %d inliers" % (len(inlier_points)))
         starting_points=inliers_removed_from_starting
-        results.append(RansacLineInfo(inlier_points,model))
-        print("Found %d RANSAC lines" % (len(results)))
+        results.append(RansacLineInfo(inlier_points,model))        
+    
     superimposed_image=superimpose_all_inliers(results,width,height)
+    print("Found a total of %d RANSAC lines with RANSAC threshold=%f" % (len(results), ransac_threshold))
     #Save the results
     filename_noextension=os.path.splitext(inputfilename)[0]
     folder_script=os.path.dirname(__file__)
-    file_result=os.path.join(folder_script,"./out/",("sequential-ransac-result-%s.png") % (filename_noextension))
+    file_result=os.path.join(folder_script,"./out/",("sequential-ransac-%s-tfac-%.2f.png") % (filename_noextension,round(threshold_factor,2)))
     io.imsave(file_result,superimposed_image)
     print("Results saved to file %s" % (file_result))
 
@@ -163,7 +165,7 @@ def calculate_ransac_threshold_from_nearest_neighbour_estimate(data_points:List)
     mean=statistics.mean(nne_distances)
     median=statistics.median(nne_distances)
     stdev=statistics.stdev(nne_distances)
-    distance_from_line=median *.5 
+    distance_from_line=median 
     print("Mean=%f, Median=%f, Stddev=%f calculated ransca_threshold=%f" % (mean,median,stdev,distance_from_line))
     return distance_from_line
 
@@ -171,9 +173,42 @@ def run_selected_filepattern(pattern:str,num_trials:int):
     folder_script=os.path.dirname(__file__)
     folder_with_files=os.path.join(folder_script,"./in/")
     matching_files=glob.glob(folder_with_files+pattern)
+    print("Found %d matching files" % (len(matching_files)))
     for file in matching_files:
-        extract_multiple_lines_and_save(inputfile=file,iterations= num_trials, min_inliers_allowed=10)
+        extract_multiple_lines_and_save(inputfile=file,iterations= num_trials, min_inliers_allowed=3, threshold_factor=0.25)
+        extract_multiple_lines_and_save(inputfile=file,iterations= num_trials, min_inliers_allowed=3, threshold_factor=0.5)
+        extract_multiple_lines_and_save(inputfile=file,iterations= num_trials, min_inliers_allowed=3, threshold_factor=1.0)
 
 
 
-run_selected_filepattern(pattern="*parabola*.png",num_trials=5)
+#run_selected_filepattern(pattern="*parabola*.png",num_trials=10)
+run_selected_filepattern(pattern="*parabola*.8*.png",num_trials=10) #tried with 5
+
+'''
+Major change in computing NND
+-----------------------------
+    At every sequence of RANSAC,compute the NND
+    Why? You are removing the points in every iteration
+    Therefore, if there was a poor quality line needing larger RANSAC threshold, then chances of that finding increase now
+
+Lesson 1 - Size of the patch
+----------------------------
+    The ability to detect a valid line is dependent on the size of the patch
+    You will need smaller patches
+    The size of the patch should not be much larger than the valid line
+    Need to find a heuristic. Example - if target length=X then patch size= is X * factor
+
+Lesson 2 - Ransac threshold
+----------------------------
+    I kept num_trials=5
+    I tried with various fractions of mean NND - 1.0, 0.5 and 0.25
+    0.25 worked find for the curve of the parabola and it identified the arms (64X45)
+    1 and 0.5 worked for the larger (200X200) and the arms were identified.
+    0.25 identified the arms of (200X200) but just half the length only
+
+Lesson 3 - How many lines to find
+----------------------------------
+    Tried wih num_trials=10 and NND factors of 1.0 , 0.5 and 0.25
+    num_trials=5 is fine. We have lesser 
+
+'''
