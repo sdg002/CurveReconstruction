@@ -8,6 +8,8 @@ from skimage import io
 import math
 import datetime
 import glob
+from sklearn.neighbors import KDTree
+import statistics
 
 min_samples=3 #RANSAC parameter - The minimum number of data points to fit a model to.
 #min_inliers_allowed=5 #Custom parameter  - A line is selected only if these many inliers are found
@@ -43,14 +45,16 @@ def read_black_pixels(imagefilename:str):
 
 def extract_first_ransac_line(data_points:[], max_distance:int):
     """
-    Accepts a numpy array with shape N,2  N points, with coordinates x=[0],y=[1]
+    Inputs:
+        Accepts a numpy array with shape N,2  N points, with coordinates x=[0],y=[1]
+        max_distance - This is the RANSAC threshold distance from a line for a point to be classified as inlier
     Returns 
          A numpy array with shape (N,2), these are the inliers of the just discovered ransac line
          All data points with the inliers removed
          The model line
     """
     
-    
+    print("Doing RANSAC to get single line on image with %d points and RANSAC threshold=%f" % (data_points.shape[0],max_distance))
     model_robust, inliers = ransac(data_points, LineModelND, min_samples=min_samples,
                                    residual_threshold=max_distance, max_trials=1000)
     results_inliers=[]
@@ -117,10 +121,9 @@ def superimpose_all_inliers(ransac_lines,width:float, height:float):
             new_image[new_y][x][2]=color[2]
     return new_image
 
-def extract_multiple_lines_and_save(inputfile:str,iterations:int, max_distance:int,min_inliers_allowed:int):
+def extract_multiple_lines_and_save(inputfile:str,iterations:int, min_inliers_allowed:int):
     """
     min_inliers_allowed - a line is selected only if it has more than this inliers. The search process is halted when this condition is met
-    max_distance - This is the RANSAC threshold distance from a line for a point to be classified as inlier
     """
     print("---------------------------------------")
     inputfilename=os.path.basename(inputfile)
@@ -130,12 +133,13 @@ def extract_multiple_lines_and_save(inputfile:str,iterations:int, max_distance:i
     results:List[RansacLineInfo]=[]
     all_black_points,width,height=read_black_pixels(inputfile)
     print("Found %d pixels in the file %s" % (len(all_black_points),inputfilename))
+    ransac_threshold=calculate_ransac_threshold_from_nearest_neighbour_estimate(all_black_points)
     starting_points=all_black_points
     for index in range(0,iterations):
         if (len(starting_points) <= min_samples):
             print("No more points available. Terminating search for RANSAC")
             break
-        inlier_points,inliers_removed_from_starting,model=extract_first_ransac_line(starting_points,max_distance=max_distance)
+        inlier_points,inliers_removed_from_starting,model=extract_first_ransac_line(starting_points,max_distance=ransac_threshold)
         if (len(inlier_points) < min_inliers_allowed):
             print("Not sufficeint inliers found %d , threshold=%d, therefore halting" % (len(inlier_points),min_inliers_allowed))
             break
@@ -151,19 +155,25 @@ def extract_multiple_lines_and_save(inputfile:str,iterations:int, max_distance:i
     print("Results saved to file %s" % (file_result))
 
 
-def calculate_ransac_threshold_from_nearest_neighbour_estimate(inputfile:str):
-    print("Calculating RANSAC threshold on %s" % (inputfile))
-    return 1
+def calculate_ransac_threshold_from_nearest_neighbour_estimate(data_points:List):
+    print("Calculating RANSAC threshold from %d point " % (data_points.shape[0]))
+    tree = KDTree(data_points)
+    nearest_dist, nearest_ind = tree.query(data_points, k=2)
+    nne_distances=list(nearest_dist[0:,1:].flatten())
+    mean=statistics.mean(nne_distances)
+    median=statistics.median(nne_distances)
+    stdev=statistics.stdev(nne_distances)
+    distance_from_line=median *.5 
+    print("Mean=%f, Median=%f, Stddev=%f calculated ransca_threshold=%f" % (mean,median,stdev,distance_from_line))
+    return distance_from_line
 
 def run_selected_filepattern(pattern:str,num_trials:int):
     folder_script=os.path.dirname(__file__)
     folder_with_files=os.path.join(folder_script,"./in/")
     matching_files=glob.glob(folder_with_files+pattern)
     for file in matching_files:
-        #filename=os.path.basename(file)
-        ransac_threshold=calculate_ransac_threshold_from_nearest_neighbour_estimate(file)
-        extract_multiple_lines_and_save(inputfile=file,iterations= 30,max_distance=ransac_threshold, min_inliers_allowed=10)
+        extract_multiple_lines_and_save(inputfile=file,iterations= num_trials, min_inliers_allowed=10)
 
 
 
-run_selected_filepattern(pattern="*parabola*.png",num_trials=30)
+run_selected_filepattern(pattern="*parabola*.png",num_trials=5)
