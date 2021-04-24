@@ -65,15 +65,15 @@ def run(inputfilename:str,num_trials:int=1000):
     median=statistics.median(nne_distances)
     stdev=statistics.stdev(nne_distances)
     print("Count of points=%d" % (len(points_array)))
+    distance_from_line=median *.5 #2 of the files didnot give correct output
     #distance_from_line=median *1.0 #2 of the files didnot give correct output
     #distance_from_line=median -stdev #2 of the files didnot give correct output
-    distance_from_line=median*0.25
+    #distance_from_line=median*0.25 #best results, just 1 file missed
     print("Mean=%f, Mode=%f, Median=%f, Stddev=%f ransca_threshold=%f" % (mean,mode, median,stdev,distance_from_line))
     #
     #Now do the RANSAC
     #
     #I tried mode-stdev, but this produced near zero threshold for LineSample2.png
-    #distance_from_line=mode *.5
     min_samples=3
     model_robust, inliers = ransac(points_array, LineModelND, min_samples=min_samples,
                                    residual_threshold=distance_from_line, max_trials=num_trials)
