@@ -1,3 +1,54 @@
+'''
+Major change in computing NND
+-----------------------------
+    At every sequence of RANSAC,compute the NND
+    Why? You are removing the points in every iteration
+    Therefore, if there was a poor quality line needing larger RANSAC threshold, then chances of that finding increase now
+
+Lesson 1 - Size of the patch
+----------------------------
+    The ability to detect a valid line is dependent on the size of the patch
+    You will need smaller patches
+    The size of the patch should not be much larger than the valid line
+    Need to find a heuristic. Example - if target length=X then patch size= is X * factor
+    Possible heuristic - 
+    -------------------
+        The diagonal of the PATCH, i.e. the longest possible line segment should be less than
+    the length of the line segment in the target curve that falls in the patch
+
+Lesson 2 - Ransac threshold
+----------------------------
+    I kept num_trials=5
+    I tried with various fractions of mean NND - 1.0, 0.5 and 0.25
+    0.25 worked find for the curve of the parabola and it identified the arms (64X45)
+    1 and 0.5 worked for the larger (200X200) and the arms were identified.
+    0.25 identified the arms of (200X200) but just half the length only
+
+Lesson 3 - How many lines to find
+----------------------------------
+    Tried wih num_trials=10 and NND factors of 1.0 , 0.5 and 0.25
+    num_trials=5 is fine. We have lesser 
+
+Next steps
+----------
+    Quality of RANSAC line
+    -----------------------
+    We need some info about the quality of the RANSAC line. We know the inliers but this does not tell us how far apart the projected points are
+    e.g. 2 RANSAC lines with same inliers but different segment lengths.
+    Or consider a RANSAC line which has large inliers but all the points are crowded nearby. This is not a good line.
+
+    What will you do once you determine the quality of the RANSAC line?
+    -------------------------------------------------------------------
+    to be answered???
+
+
+    Scale down the image size and try out
+    -------------------------------------
+    to be done??? and then apply a filter . Objective -> determine areas of interest before applying RANSAC
+
+'''
+
+
 import numpy as np
 from matplotlib import pyplot as plt
 from typing import Union, Any, List, Optional, cast, Dict
@@ -184,31 +235,3 @@ def run_selected_filepattern(pattern:str,num_trials:int):
 #run_selected_filepattern(pattern="*parabola*.png",num_trials=10)
 run_selected_filepattern(pattern="*parabola*.8*.png",num_trials=10) #tried with 5
 
-'''
-Major change in computing NND
------------------------------
-    At every sequence of RANSAC,compute the NND
-    Why? You are removing the points in every iteration
-    Therefore, if there was a poor quality line needing larger RANSAC threshold, then chances of that finding increase now
-
-Lesson 1 - Size of the patch
-----------------------------
-    The ability to detect a valid line is dependent on the size of the patch
-    You will need smaller patches
-    The size of the patch should not be much larger than the valid line
-    Need to find a heuristic. Example - if target length=X then patch size= is X * factor
-
-Lesson 2 - Ransac threshold
-----------------------------
-    I kept num_trials=5
-    I tried with various fractions of mean NND - 1.0, 0.5 and 0.25
-    0.25 worked find for the curve of the parabola and it identified the arms (64X45)
-    1 and 0.5 worked for the larger (200X200) and the arms were identified.
-    0.25 identified the arms of (200X200) but just half the length only
-
-Lesson 3 - How many lines to find
-----------------------------------
-    Tried wih num_trials=10 and NND factors of 1.0 , 0.5 and 0.25
-    num_trials=5 is fine. We have lesser 
-
-'''

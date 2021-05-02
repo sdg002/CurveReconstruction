@@ -4,9 +4,7 @@ import os
 from os import listdir
 from os.path import join
 import datetime
-
-
-
+import glob
 
 
 def resize_demo(filename:str):
@@ -18,18 +16,18 @@ def resize_demo(filename:str):
 
     folder_script=os.path.dirname(__file__)
     now=datetime.datetime.now()    
-    filename_result=("%s-%s.png") % (os.path.basename(filename),now.strftime("%Y-%m-%d-%H-%M-%S"))
+    filename_result=("Reduced-%s-%s.png") % (os.path.basename(filename),now.strftime("%Y-%m-%d-%H-%M-%S"))
     file_result=os.path.join(folder_script,"./out/",filename_result)
     io.imsave(file_result,image_resized)
 
 def get_input_file():
     return ""
 
-def resize_all_files_in_folder(folder:str):
-    files=listdir(folder)
+def resize_all_files_in_folder(folder:str,pattern:str):
+    matching_files=glob.glob(folder+pattern)    
     count=0
-    for file in files:
-        extension=os.path.splitext(files[0])[1]
+    for file in matching_files:
+        extension=os.path.splitext(matching_files[0])[1]
         if (extension.lower() != '.png'):
             continue
         absolutepath=join(folder,file)
@@ -39,4 +37,5 @@ def resize_all_files_in_folder(folder:str):
     pass
 
 #resize_demo("C:/Users/saurabhd/MyTrials/MachineLearnings-2/CurveReconstruction/Main/in/Sine-W=500.H=200.MAXD=20.SP=0.95.2.png.2.png")
-resize_all_files_in_folder("C:/Users/saurabhd/MyTrials/MachineLearnings-2/CurveReconstruction/Main/in")
+current_folder_with_samples=os.path.join(os.path.dirname(__file__),"./in/")
+resize_all_files_in_folder(folder=current_folder_with_samples, pattern="*para*")
